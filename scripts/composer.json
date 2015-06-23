@@ -1,9 +1,0 @@
-{
-    "require": {
-        "guzzle/guzzle": "3.*",
-	    "monolog/monolog": "1.10.*"
-    },
-    "autoload": {
-        "files": ["APIClient.php", "Logger.php", "Report.php"]
-    }
-}
