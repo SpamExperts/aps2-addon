@@ -1,0 +1,136 @@
+<application packaged="2015-01-09T20:23:47" version="2.0" xmlns="http://aps-standard.org/ns/2">
+    <id>http://aps.spamexperts.com/app</id>
+    <name>SpamExperts</name>
+    <version>2.0</version>
+    <release>5</release>
+    <homepage>http://www.spamexperts.com/</homepage>
+
+    <vendor>
+        <name>SpamExperts B.V.</name>
+        <homepage>http://www.spamexperts.com/</homepage>
+        <icon path="images/spamexperts-64x64.png"/>
+    </vendor>
+
+    <packager>
+        <name>SpamExperts B.V.</name>
+        <homepage>http://www.spamexperts.com</homepage>
+        <uri>http://www.spamexperts.com</uri>
+    </packager>
+
+    <presentation>
+        <summary>SpamExperts</summary>
+        <description>Integrates SpamExperts' advanced email protection system with Parallels Automation, offering flexible and automatic protection of domain and email resources as well as a one-click login option to our dedicated SpamExperts CP for managing specific settings, viewing detailed statistics and enhanced user control.</description>
+        <icon path="images/spamexperts-64x64.png"/>
+        <screenshot path="images/login.png">
+            <description>SpamExperts CP Login</description>
+        </screenshot>
+
+        <changelog>
+            <version version="2.0" release="1">
+                <entry>SpamExperts 2.0 email protection system integration for PA completely rebuilt for APS2.0. First release!</entry>
+            </version>
+            <version version="2.0" release="2">
+                <entry>Added service user wizard, related changes to email user handling and domain owner checking/updating.</entry>
+            </version>
+            <version version="2.0" release="3">
+                <entry>Customer multi-subscription support, some bug fixes and minor improvements.</entry>
+            </version>
+            <version version="2.0" release="4">
+                <entry>Support for multiple subscriptions per customer with auto domain protection enabled. Handling instance MX record changes appropriately. Fixed some bugs and made some stability updates.</entry>
+            </version>
+            <version version="2.0" release="5">
+                <entry>HC and sub-admin support. Upgrade process defined and added environment checking.</entry>
+            </version>
+        </changelog>
+
+        <categories>
+            <category>Back office/Professional Services Automation</category>
+        </categories>
+
+        <languages>
+            <language>en</language>
+        </languages>
+
+        <navigation id="ccp" label="SpamExperts">
+            <var name="context" type-id="http://aps.spamexperts.com/app/context/1.1"/>
+            <plugs-to id="http://www.aps-standard.org/ui/service"/>
+            <item id="domains" label="Domains">
+                <view id="domains" label="Domains">
+                </view>
+            </item>
+            <item id="emails" label="Email Users">
+                <view id="emails" label="Email Users">
+                </view>
+            </item>
+            <item id="operations" label="Operations">
+                <view id="operations" label="Operations">
+                </view>
+            </item>
+        </navigation>
+
+        <navigation id="suwizard">
+            <view id="suwizard.new" label="New SE Email User">
+                <var name="context" type-id="http://aps.spamexperts.com/app/context/1.1"/>
+                <plugs-to id="http://www.aps-standard.org/ui/service/suwizard.new"/>
+            </view>
+            <view id="suwizard.overview" label="SE Overview">
+                <plugs-to id="http://www.aps-standard.org/ui/service/suwizard.overview"/>
+            </view>
+            <view id="suservice.view" label="Settings">
+                <var name="context" type-id="http://aps.spamexperts.com/app/context/1.1"/>
+                <plugs-to id="http://www.aps-standard.org/ui/service/suservice.view"/>
+            </view>
+        </navigation>
+    </presentation>
+
+    <license-agreement must-accept="true">
+        <free/>
+        <text>
+            <name>General Terms &amp; Conditions</name>
+            <file>https://www.spamexperts.com/about/legal-information/general-terms-and-conditions</file>
+        </text>
+    </license-agreement>
+
+    <upgrade match="version=eq=2.0,release=ge=3"/>
+
+    <service id="service">
+        <schema path="schemas/service.schema.gen"/>
+        <code engine="php" path="scripts/service.php"/>
+        <presentation>
+            <name>SpamExperts</name>
+            <summary>SpamExperts application service and global settings handler</summary>
+            <infolinks>
+                <link class="official" href="http://www.spamexperts.com/">Official site</link>
+                <link class="support" href="https://my.spamexperts.com/kb/">Support</link>
+                <link class="deployment-guide" href="https://my.spamexperts.com/kb/742/Parallels-Automation-APS-20-addon.html">Deployment Guide</link>
+            </infolinks>
+        </presentation>
+    </service>
+
+    <service id="context">
+        <schema path="schemas/context.schema.gen"/>
+        <code engine="php" path="scripts/context.php"/>
+        <presentation>
+            <name>SpamExperts Context Service</name>
+            <summary>SpamExperts context service containing account and subscription information and handling all account operations</summary>
+        </presentation>
+    </service>
+
+    <service id="domain">
+        <schema path="schemas/domain.schema.gen"/>
+        <code engine="php" path="scripts/domain.php"/>
+        <presentation>
+            <name>SpamExperts Domain Service</name>
+            <summary>SpamExperts domain resource handler service</summary>
+        </presentation>
+    </service>
+
+    <service id="email">
+        <schema path="schemas/email.schema.gen"/>
+        <code engine="php" path="scripts/email.php"/>
+        <presentation>
+            <name>SpamExperts Email Service</name>
+            <summary>SpamExperts email resource handler service</summary>
+        </presentation>
+    </service>
+</application>

@@ -1,0 +1,12 @@
+{
+  "instanceProperties": {
+    "SECP": "http://demo1.spambrand.com/",
+    "hostname": "demo1.spambrand.com",
+    "username": "admin",
+    "password": "demo",
+    "mx1": "mx1.simplyspamfree.com",
+    "mx2": "mx2.simplyspamfree.com",
+    "mx3": "mx3.simplyspamfree.com",
+    "ssl": "true"
+  }
+}

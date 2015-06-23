@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="/aps/2/ui/runtime/client/aps/aps.js"></script>
+    <script>
+        require([    "aps/load", "dijit/registry", "./assets/js/common.js", "aps/ready!" ],
+                function( load,         registry,               common ) {
+                    "use strict";
+
+                    load(
+                            ["aps/PageContainer",
+                                [
+                                    ["aps/ToolsList", {
+                                        title: "Global Operations"
+                                    },
+                                        [
+                                            ["aps/ToolsItem", {
+                                                id: "se_install",
+                                                title: "Total Protection",
+                                                iconName: "./assets/img/spamexperts-32x32.png",
+                                                description: "<span class='note-minor'>Protect all resources.</span>",
+                                                autoBusy: true,
+                                                escapeHTML: false,
+                                                onClick: function() {
+                                                    common.actionHandler(common.SEA("protectAll"), registry.byId("se_install"));
+                                                }
+                                            }],
+                                            ["aps/ToolsItem", {
+                                                id: "se_uninstall",
+                                                title: "Uninstall",
+                                                iconName: "/pem/images/icons/env_destroy_32x32.gif",
+                                                description: "<span class='note-minor'>Remove protection from all resources.</span>",
+                                                autoBusy: true,
+                                                escapeHTML: false,
+                                                onClick: function() {
+                                                    common.actionHandler(common.SEA("unprotectAll"), registry.byId("se_uninstall"));
+                                                }
+                                            }],
+                                            ["aps/ToolsItem", {
+                                                id: "refresh_container",
+                                                title: "Refresh Container",
+                                                iconName: "/pem/images/icons/wt_ssl_32x32.gif",
+                                                description: "<span class='note-minor'>Updates SE container data.</span>",
+                                                autoBusy: true,
+                                                escapeHTML: false,
+                                                onClick: function() {
+                                                    common.actionHandler(common.SEA("refreshContainer"), registry.byId("refresh_container"));
+                                                }
+                                            }]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                    );
+                });
+    </script>
+</head>
+<body>
+</body>
+</html>
