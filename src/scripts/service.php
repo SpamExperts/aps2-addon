@@ -107,7 +107,7 @@ class service extends \APS\ResourceBase
         // Check APS Runtime Library version
         $APS_VERSION = array_shift(explode('-', \Rest\RestService::VERSION));
         $MIN_APS_VERSION = self::MIN_APS_VERSION;
-        if ($APS_VERSION < self::MIN_APS_VERSION) {
+        if ($APS_VERSION < $MIN_APS_VERSION) {
             throw new Exception("The minimum supported version of the APS Runtime Library is v$MIN_APS_VERSION for POA 6.0 and up; you have version v$APS_VERSION. Please update your environment accordingly and try to reinstall the instance.");
         }
 
@@ -134,40 +134,58 @@ class service extends \APS\ResourceBase
 
         switch($version) {
             case "2.0-3":
-                $this->contextUpgrade1();
+                $this->contextUpgrade("1.1");
                 break;
             case "2.0-4":
-                $this->contextUpgrade1();
+                $this->contextUpgrade("1.1");
                 break;
         }
 
         $this->logger->info(__FUNCTION__ . ": stop");
     }
 
-    private function contextUpgrade1()
+    private function contextUpgrade($version)
     {
-        $this->logger->info(__FUNCTION__ . ": Upgrading contexts from 1.0 to 1.1");
+        switch ($version) {
+            case "1.1":
+                $this->logger->info(__FUNCTION__ . ": Upgrading contexts from 1.0 to 1.1");
 
-        $contexts = $this->APSC()->getResources('implementing(http://aps.spamexperts.com/app/context/1.0)');
+                $contexts = $this->APSC()->getResources('implementing(http://aps.spamexperts.com/app/context/1.0)');
+                foreach ($contexts as $context) {
+                    $context->aps->type = "http://aps.spamexperts.com/app/context/1.1";
+                    $this->APSC()->updateResource($context);
+                }
 
-        foreach ($contexts as $context) {
-            $this->logger->info(__FUNCTION__ . ": Container: $context->username");
-            $context->aps->type = "http://aps.spamexperts.com/app/context/1.1";
-            $this->APSC()->updateResource($context);
-            //$context = $this->APSC()->getResource($context->aps->id);
-        }
+                $this->logger->info(__FUNCTION__ . ": Updating context resources (new mx property and subscription limit event subscription)");
 
-        $this->logger->info(__FUNCTION__ . ": Updating context resources (new mx property and subscription limit event subscription)");
+                $contexts = $this->APSC()->getResources('implementing(http://aps.spamexperts.com/app/context/1.1)');
 
-        $contexts = $this->APSC()->getResources('implementing(http://aps.spamexperts.com/app/context/1.1)');
 
-        foreach ($contexts as $context /** @var $context context */) {
-            $this->logger->info(__FUNCTION__ . ": Container: $context->username");
+                $mx = array();
+                for ($i = 1; $i <= 4; $i++) {
+                    if ($this->{"mx$i"}) {
+                        $mx[] = $this->{"mx$i"} . ".";
+                    }
+                }
+
+                foreach ($contexts as $context) {
+                    $this->logger->info(__FUNCTION__ . ": Container: $context->username");
+
+                    // New subscription - on subscription limit changed
+                    $onSubscriptionLimitChanged = new \APS\EventSubscription(\APS\EventSubscription::SubscriptionLimitChanged, "onSubscriptionLimitChanged");
+                    $onSubscriptionLimitChanged->source = (object)array('id'   => $context->subscription->aps->id);
+                    $this->APSC()->subscribe($context, $onSubscriptionLimitChanged);
+
+                    // New property - mx
+                    $context->mx = $mx;
+                    $this->APSC()->updateResource($context);
+                }
+                break;
         }
     }
 
     private function APSC($resource = null)
     {
-        return $this->APSC ?: $this->APSC = \APS\Request::getController()->impersonate($resource ?: $this);
+        return $this->APSC ?: $this->APSC = \APS\Request::getController();
     }
 }

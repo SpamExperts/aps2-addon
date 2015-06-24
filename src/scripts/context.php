@@ -248,7 +248,7 @@ class context extends \APS\ResourceBase
 
         $this->username = $this->admin->login . '_' . $this->subscription->subscriptionId;
         $this->password = md5($this->aps->id);
-        $this->mx       = $this->getServiceMXRecords(false);
+        $this->mx       = $this->getServiceMXRecords();
 
         ## Create a new reseller container for the account
         $this->logger->info(__FUNCTION__ . ": Creating new SE account");
@@ -391,14 +391,14 @@ class context extends \APS\ResourceBase
 
         $this->logger->info(__FUNCTION__ . ": Updating domain MX records...");
 
-        if ($this->mx != $this->getServiceMXRecords()) {
+        if ($this->mx != $this->mx) {
             // Removing old records
             foreach ($this->domains as $domain) {
                 $this->revertMXRecords($domain->domain);
             }
 
             // Updating current records
-            $this->mx = $this->getServiceMXRecords();
+            $this->mx = $this->mx;
             $this->APSC()->updateResource($this);
 
             // Updating domain records
@@ -858,7 +858,7 @@ class context extends \APS\ResourceBase
     ## MX Records
 
 
-    private function getServiceMXRecords($updateContext = true)
+    private function getServiceMXRecords()
     {
         $mx = array();
 
@@ -866,11 +866,6 @@ class context extends \APS\ResourceBase
             if ($this->service->{"mx$i"}) {
                 $mx[] = $this->service->{"mx$i"} . ".";
             }
-        }
-
-        if ($updateContext && $this->mx != $mx) {
-            $this->mx = $mx;
-            $this->APSC()->updateResource($this);
         }
 
         return $mx;
@@ -881,7 +876,7 @@ class context extends \APS\ResourceBase
         $rql = "and(implementing(http://parallels.com/aps/types/pa/dns/record/mx/1.0),";
         if ($io) {
             // Get only SE records or except SE records
-            $SEMXs = implode(',', $this->getServiceMXRecords());
+            $SEMXs = implode(',', $this->mx);
             $rql .= "$io(exchange,($SEMXs)),";
         }
 
@@ -898,7 +893,7 @@ class context extends \APS\ResourceBase
 
     private function checkMXRecords($domain)
     {
-        return count($this->getServiceMXRecords()) == count($this->getPAMXRecords($domain, 'in'));
+        return count($this->mx) == count($this->getPAMXRecords($domain, 'in'));
     }
 
     private function revertMXRecords($domain) {
@@ -925,7 +920,7 @@ class context extends \APS\ResourceBase
             $pa_records = $this->getPAMXRecords($domain);
 
             ## Avoid potential conflicts from existing SE records
-            $SEMXs = $this->getServiceMXRecords();
+            $SEMXs = $this->mx;
             foreach ($pa_records as $pa_index => $pa_record) {
                 if (($se_index = array_search($pa_record->exchange, $SEMXs)) !== false) {
                     unset($pa_records[$pa_index]);

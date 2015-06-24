@@ -24,7 +24,7 @@ Here is a more detailed explanation of the options you can use for the build:
 ```
 --src     => Source directory to use for the build (default is 'src'); Usage: --src my_source_dir
 --dir     => Use a specific output directory name (default is 'spamexperts') Usage: --dir my_output_dir
---package => Build APS package with specified name (default is 'SpamExperts-2.0-X.app.zip') Usage: --package; --package my_spamexperts_package.app.zip
+--package => Build an APS package; you can optionally specify a name (default is 'SpamExperts-2.0-X.app.zip') Usage: --package; --package='my_package.app.zip'
 --dev     => Development build (keeps some files; ignores --package) Usage: --dev
 ```
 
