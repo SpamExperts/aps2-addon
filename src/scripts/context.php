@@ -365,10 +365,19 @@ class context extends \APS\ResourceBase
         $this->logger->info(__FUNCTION__ . ": start");
 
         $domain = $this->APSC()->getResource($event->source->id);
-        $auto   = $this->auto_protect_domain->limit;
+
+        $subscriptionIsTheSame = $domain->hosting->aps->id == $this->subscription->aps->id;
+        $singleSubscriptionWithAutoprovision =
+            count($this->APSC()->getResources("and(implementing(http://aps.spamexperts.com/app/context/1.1),ge(auto_protect_domain.limit,1))")) == 1;
+
+        $this->logger->info(__FUNCTION__ . ": auto_protect_domain is "
+            . (!empty($this->auto_protect_domain->limit) ? 'enabled' : 'disabled') . "; "
+            . "subscription is" . ($subscriptionIsTheSame ? '' : ' NOT') . " the same; "
+            . "there's just one subscription with auto protection enabled - " . ($singleSubscriptionWithAutoprovision ? 'yes' : ' no') . ".");
 
         // Protect domain if: auto protection is enabled and (the domain is being added to this subscription or if there's just one subscription with auto protection enabled)
-        if (isset($auto) && $auto >= 1 && ($domain->hosting->aps->id == $this->subscription->aps->id || count($this->APSC()->getResources("and(implementing(http://aps.spamexperts.com/app/context/1.1),ge(auto_protect_domain.limit,1))")) == 1)) {
+        if (!empty($this->auto_protect_domain->limit)
+            && ($subscriptionIsTheSame || $singleSubscriptionWithAutoprovision)) {
             $this->logger->info(__FUNCTION__ . ": New domain: " . $domain->name);
 
             $this->APSN = array('type' => 'domain', 'name' => 'name');
@@ -794,16 +803,6 @@ class context extends \APS\ResourceBase
         return !empty($IDs) ? array_map(array($this->APSC(), 'getResource'), $IDs) : $this->APSC()->getResources("implementing($type)");
     }
 
-    private function getResourcesFromNames($names)
-    {
-        $names = implode(',', $names);
-        return $this->APSC()->getResources("in(name,($names))", "/aps/2/resources/{$this->account->aps->id}/domains");
-    }
-
-    private function getAssocArray($items, $property)
-    {
-        return array_reduce($items, function ($items, $item) use ($property) { $items[$item->{$property}] = $item; return $items; }, array());
-    }
 
 
     ## Reseller
