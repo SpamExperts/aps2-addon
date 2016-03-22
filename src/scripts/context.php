@@ -803,6 +803,16 @@ class context extends \APS\ResourceBase
         return !empty($IDs) ? array_map(array($this->APSC(), 'getResource'), $IDs) : $this->APSC()->getResources("implementing($type)");
     }
 
+    private function getResourcesFromNames($names)
+    {
+        $names = implode(',', $names);
+        return $this->APSC()->getResources("in(name,($names))", "/aps/2/resources/{$this->account->aps->id}/domains");
+    }
+
+    private function getAssocArray($items, $property)
+    {
+        return array_reduce($items, function ($items, $item) use ($property) { $items[$item->{$property}] = $item; return $items; }, array());
+    }
 
 
     ## Reseller
