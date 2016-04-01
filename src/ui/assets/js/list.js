@@ -9,9 +9,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                     Type = 'Domain';
                     target = "/domains";
                     entriesFilter = function () {
-                        return (excludedDomains.length
-                            ? "?out(" + field + ",(" + excludedDomains.join(",") + "))"
-                            : "");
+                        return (excludedDomains.length ? "?out(" + field + ",(" + excludedDomains.join(",") + "))" : "");
                     };
                     break;
                 case 'email':
@@ -27,18 +25,16 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                             }
                         }
 
-                        return (likes.length
-                            ? "?not(or(" + likes.join(",") + "))"
-                            : "");
+                        return (likes.length ? "?not(or(" + likes.join(",") + "))" : "");
                     };
                     break;
             }
 
             common.SEA('account').then(function (account) {
                 common.SEA(type + 's').then(function (resources) {
-                    xhr("/aps/2/resources?implementing(" + common.types.domain
-                        + "),not(linkedWith(" + aps.context.vars.context.aps.id
-                        + "))").then(function (excludedResources) {
+                    xhr("/aps/2/resources?implementing(" + common.types.domain +
+                        "),not(linkedWith(" + aps.context.vars.context.aps.id +
+                        "))").then(function (excludedResources) {
                         if (Object.prototype.toString.call(excludedResources) === '[object Array]') {
                             for (var i = 0; i < excludedResources.length; i++) {
                                 if (excludedResources[i][common.fields.domain]) {
