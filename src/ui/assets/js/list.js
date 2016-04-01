@@ -1,24 +1,38 @@
 define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/xhr", "aps/load", "dojo/when", "dojo/query", "dijit/registry", "./assets/js/common.js" ],
     function ( Message,       Button,       ResourceStore,       Memory,       xhr,       load,        when,        query,         registry,               common ) {
         return function (type) {
-            var field, Type, target;
+            var field, Type, target, apsType, excludedEntries = [];
 
             switch (type) {
                 case 'domain':
                     field = 'name';
                     Type = 'Domain';
                     target = "/domains";
+                    apsType = common.types.domain;
                     break;
                 case 'email':
                     field = 'login';
                     Type = 'Email';
                     target = "/users";
+                    apsType = common.types.email;
                     break;
             }
 
             common.SEA('account').then(function (account) {
                 common.SEA(type + 's').then(function (resources) {
-                    loadList(account[0], resources);
+                    xhr("/aps/2/resources?implementing(" + apsType
+                        + "),not(linkedWith(" + aps.context.vars.context.aps.id
+                        + "))").then(function (excludedResources) {
+                        if (Object.prototype.toString.call(excludedResources) === '[object Array]') {
+                            for (var i = 0; i < excludedResources.length; i++) {
+                                if (excludedResources[i][field]) {
+                                    excludedEntries.push(excludedResources[i][field]);
+                                }
+                            }
+                        }
+
+                        loadList(account[0], resources);
+                    });
                 });
             });
 
@@ -34,6 +48,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                     },
                     store = new ResourceStore({
                         target: "/aps/2/resources/" + account.aps.id + target
+                            + (excludedEntries.length ? "?out(" + field + ",(" + excludedEntries.join(",") + "))" : "")
                     }),
                     SEData = getSEData(resources),
                     login = aps.context.vars.context['cp_' + type],
