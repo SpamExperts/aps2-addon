@@ -7,6 +7,10 @@ define([  "aps/Message", "aps/ResourceStore", "aps/xhr", "dojo/when", "dijit/reg
                 domain:  "http://aps.spamexperts.com/app/domain/1.0",
                 email:   "http://aps.spamexperts.com/app/email/1.0"
             },
+            fields: {
+                domain: "name",
+                email:  "login"
+            },
             SEA: function(action, options) {
                 return xhr("/aps/2/resources/" + aps.context.vars.context.aps.id + "/" + action, typeof options !== 'undefined' ? options : {});
             },

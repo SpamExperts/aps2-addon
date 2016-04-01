@@ -1,32 +1,48 @@
 define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/xhr", "aps/load", "dojo/when", "dojo/query", "dijit/registry", "./assets/js/common.js" ],
     function ( Message,       Button,       ResourceStore,       Memory,       xhr,       load,        when,        query,         registry,               common ) {
         return function (type) {
-            var field, Type, target, apsType, excludedEntries = [];
+            var field, Type, target, excludedDomains = [], entriesFilter = function () { return ''; };
 
             switch (type) {
                 case 'domain':
-                    field = 'name';
+                    field = common.fields.domain;
                     Type = 'Domain';
                     target = "/domains";
-                    apsType = common.types.domain;
+                    entriesFilter = function () {
+                        return (excludedDomains.length
+                            ? "?out(" + field + ",(" + excludedDomains.join(",") + "))"
+                            : "");
+                    };
                     break;
                 case 'email':
-                    field = 'login';
+                    field = common.fields.email;
                     Type = 'Email';
                     target = "/users";
-                    apsType = common.types.email;
+                    entriesFilter = function () {
+                        var likes = [];
+
+                        if (excludedDomains.length) {
+                            for (var i = 0; i < excludedDomains.length; i++) {
+                                likes.push("like(" + field + ",*@" + excludedDomains[i] + ")");
+                            }
+                        }
+
+                        return (likes.length
+                            ? "?not(or(" + likes.join(",") + "))"
+                            : "");
+                    };
                     break;
             }
 
             common.SEA('account').then(function (account) {
                 common.SEA(type + 's').then(function (resources) {
-                    xhr("/aps/2/resources?implementing(" + apsType
+                    xhr("/aps/2/resources?implementing(" + common.types.domain
                         + "),not(linkedWith(" + aps.context.vars.context.aps.id
                         + "))").then(function (excludedResources) {
                         if (Object.prototype.toString.call(excludedResources) === '[object Array]') {
                             for (var i = 0; i < excludedResources.length; i++) {
-                                if (excludedResources[i][field]) {
-                                    excludedEntries.push(excludedResources[i][field]);
+                                if (excludedResources[i][common.fields.domain]) {
+                                    excludedDomains.push(excludedResources[i][common.fields.domain]);
                                 }
                             }
                         }
@@ -47,8 +63,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                         return SEData;
                     },
                     store = new ResourceStore({
-                        target: "/aps/2/resources/" + account.aps.id + target
-                            + (excludedEntries.length ? "?out(" + field + ",(" + excludedEntries.join(",") + "))" : "")
+                        target: "/aps/2/resources/" + account.aps.id + target + entriesFilter()
                     }),
                     SEData = getSEData(resources),
                     login = aps.context.vars.context['cp_' + type],
