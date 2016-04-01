@@ -366,18 +366,25 @@ class context extends \APS\ResourceBase
 
         $domain = $this->APSC()->getResource($event->source->id);
 
-        $subscriptionIsTheSame = $domain->hosting->aps->id == $this->subscription->aps->id;
-        $singleSubscriptionWithAutoprovision =
-            count($this->APSC()->getResources("and(implementing(http://aps.spamexperts.com/app/context/1.1),ge(auto_protect_domain.limit,1))")) == 1;
+        $domainHostingApsId = $domain->hosting->aps->id;
+        $subscriptionApsId = $this->subscription->aps->id;
+        $subscriptionIsTheSame = $domainHostingApsId == $subscriptionApsId;
+        $subscriptionsWithAutoprovision =
+            $this->APSC()->getResources("and(implementing(http://aps.spamexperts.com/app/context/1.1),ge(auto_protect_domain.limit,1))");
+        $subscriptionsWithAutoprovisionCount = count($subscriptionsWithAutoprovision);
 
         $this->logger->info(__FUNCTION__ . ": auto_protect_domain is "
             . (!empty($this->auto_protect_domain->limit) ? 'enabled' : 'disabled') . "; "
-            . "subscription is" . ($subscriptionIsTheSame ? '' : ' NOT') . " the same; "
-            . "there's just one subscription with auto protection enabled - " . ($singleSubscriptionWithAutoprovision ? 'yes' : ' no') . ".");
+            . "subscription is" . ($subscriptionIsTheSame ? '' : ' NOT') . " the same (domain hosting aps id={$domainHostingApsId}; subscription aps id={$subscriptionApsId}); "
+            . "subscriptions with auto protection enabled count - {$subscriptionsWithAutoprovisionCount}.");
+
+        foreach ($subscriptionsWithAutoprovision as $sI => $subs) {
+            $this->logger->info("Subscriptions[{$sI}]: " . print_r($subs->subscription, true));
+        }
 
         // Protect domain if: auto protection is enabled and (the domain is being added to this subscription or if there's just one subscription with auto protection enabled)
         if (!empty($this->auto_protect_domain->limit)
-            && ($subscriptionIsTheSame || $singleSubscriptionWithAutoprovision)) {
+            && ($subscriptionIsTheSame || 1 == $subscriptionsWithAutoprovisionCount)) {
             $this->logger->info(__FUNCTION__ . ": New domain: " . $domain->name);
 
             $this->APSN = array('type' => 'domain', 'name' => 'name');

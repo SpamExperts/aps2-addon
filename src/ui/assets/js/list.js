@@ -1,19 +1,17 @@
 define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/xhr", "aps/load", "dojo/when", "dojo/query", "dijit/registry", "./assets/js/common.js" ],
     function ( Message,       Button,       ResourceStore,       Memory,       xhr,       load,        when,        query,         registry,               common ) {
         return function (type) {
-            var field, Type, apsType, target;
+            var field, Type, target;
 
             switch (type) {
                 case 'domain':
                     field = 'name';
                     Type = 'Domain';
-                    apsType = "http://parallels.com/aps/types/pa/dns/zone/1.0";
                     target = "/domains";
                     break;
                 case 'email':
                     field = 'login';
                     Type = 'Email';
-                    apsType = "http://aps-standard.org/types/core/service-user/1.0";
                     target = "/users";
                     break;
             }
@@ -35,7 +33,6 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                         return SEData;
                     },
                     store = new ResourceStore({
-                        apsType: apsType,
                         target: "/aps/2/resources/" + account.aps.id + target
                     }),
                     SEData = getSEData(resources),
