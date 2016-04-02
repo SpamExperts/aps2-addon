@@ -13,6 +13,8 @@ class email extends \APS\ResourceBase
     /**
      * @link("http://aps.spamexperts.com/app/context/1.1")
      * @required
+     * 
+     * @var context
      */
     public $context;
 
@@ -97,4 +99,21 @@ class email extends \APS\ResourceBase
         }
         return $this->API;
     }
+    
+    /**
+     * @verb(GET)
+     * @path("/controlPanelLoginLink")
+     * @return(string)
+     */
+    public function getControlPanelLoginLink()
+    {
+        $this->logger->info(__METHOD__ . ": start");
+
+        $ticket = $this->context->getAuthTicket($this->name);
+
+        $this->logger->info(__METHOD__ . ": stop");
+
+        return $ticket;
+    }
+
 }

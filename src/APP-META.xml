@@ -81,6 +81,14 @@
                 <plugs-to id="http://www.aps-standard.org/ui/service/suservice.view"/>
             </view>
         </navigation>
+
+        <navigation id="mycp" label="SpamExperts">
+            <var name="user" type-id="http://aps-standard.org/types/core/service-user/1.0"/>
+            <plugs-to id="http://www.aps-standard.org/ui/user"/>
+            <item id="emailops" label="Operations">
+                <view id="emailops" label="Operations"/>
+            </item>
+        </navigation>
     </presentation>
 
     <license-agreement must-accept="true">

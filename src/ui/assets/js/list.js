@@ -94,7 +94,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                                     onClick: function() {
                                         common.SEA("getAuthTicket", { query: { username: name }, handleAs: "text" }).then(function(authticket) {
                                             if (authticket) {
-                                                window.open(authticket, "_blanc");
+                                                window.open(authticket, "_blank");
                                             } else {
                                                 common.report();
                                             }
