@@ -44,6 +44,8 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                         }
 
                         loadList(account[0], resources);
+                    }).otherwise(function () {
+                        loadList(account[0], resources);
                     });
                 });
             });
