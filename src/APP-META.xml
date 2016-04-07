@@ -41,6 +41,11 @@
             <version version="2.0" release="5">
                 <entry>HC and sub-admin support. Upgrade process defined and added environment checking.</entry>
             </version>
+            <version version="2.0" release="6">
+                <entry>Domains and email which are protected under other subscription are not shown in current subscription.</entry>
+                <entry>Service user login as email user.</entry>
+                <entry>Updated SpamExperts logo.</entry>
+            </version>
         </changelog>
 
         <categories>
