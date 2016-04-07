@@ -15,15 +15,14 @@
             function (load, registry, common, xhr) {
                 "use strict";
 
-                var seEmailUserId = false,
-                    loginButton = registry.byId("se_emailuser_login");
+                var seEmailUserId = false;
 
                 xhr("/aps/2/resources?implementing(" + common.types.email +
                         "),linkedWith(" + aps.context.vars.user.aps.id +
                         ")").then(function (seEmailUsers) {
                     if (seEmailUsers[0] && seEmailUsers[0].aps.id) {
                         seEmailUserId = seEmailUsers[0].aps.id;
-                        loginButton.set("disabled", false);
+                        registry.byId("se_emailuser_login").set("disabled", false);
                     }
                 });
 
@@ -51,10 +50,10 @@
                                                     } else {
                                                         common.report();
                                                     }
-                                                    loginButton.cancel();
+                                                    registry.byId("se_emailuser_login").cancel();
                                                 }).otherwise(function (e) {
                                                     common.requestError(e);
-                                                    loginButton.cancel();
+                                                    registry.byId("se_emailuser_login").cancel();
                                                 });
                                         }
                                     }]
