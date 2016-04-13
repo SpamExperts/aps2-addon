@@ -2,7 +2,7 @@
     <id>http://aps.spamexperts.com/app</id>
     <name>SpamExperts</name>
     <version>2.0</version>
-    <release>6</release>
+    <release>7</release>
     <homepage>http://www.spamexperts.com/</homepage>
 
     <vendor>
@@ -45,6 +45,9 @@
                 <entry>Domains and email which are protected under other subscription are not shown in current subscription.</entry>
                 <entry>Service user login as email user.</entry>
                 <entry>Updated SpamExperts logo.</entry>
+            </version>
+            <version version="2.0" release="7">
+                <entry>Fixed JavaScript error on the service sser login page.</entry>
             </version>
         </changelog>
 
