@@ -92,7 +92,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                                     label: "Login",
                                     autoBusy: true,
                                     iconName: "/pem/images/panelset/enabled/login.gif",
-                                    disabled: !(typeof SEData[name] != 'undefined' && (typeof login != 'undefined' ? !login.limit : true)),
+                                    disabled: (typeof SEData[name] == 'undefined' || (typeof login != 'undefined' && ! login.limit)),
                                     onClick: function() {
                                         common.SEA("getAuthTicket", { query: { username: name }, handleAs: "text" }).then(function(authticket) {
                                             if (authticket) {
