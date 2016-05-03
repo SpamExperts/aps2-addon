@@ -15,7 +15,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                 case 'email':
                     field = common.fields.email;
                     Type = 'Email';
-                    target = "/users";
+                    target = "/users?implementing(http://aps-standard.org/types/core/service-user/1.0)";
                     entriesFilter = function () {
                         var likes = [];
 
