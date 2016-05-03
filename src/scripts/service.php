@@ -86,7 +86,7 @@ class service extends \APS\ResourceBase
      */
     public $ssl;
 
-    const VERSION = "2.0-5";
+    const VERSION = "2.0-8";
     const MIN_APS_VERSION = "2.1";
 
     /** @var $logger Logger */

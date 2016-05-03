@@ -253,21 +253,47 @@ class context extends \APS\ResourceBase
         ## Create a new reseller container for the account
         $this->logger->info(__FUNCTION__ . ": Creating new SE account");
         if ($this->createReseller()) {
+
             ## Subscribe to relevant events
             $this->logger->info(__FUNCTION__ . ": Subscribing to events");
+
             $onDomainAvailable          = new \APS\EventSubscription(\APS\EventSubscription::Available,                "onDomainAvailable");
             $onServiceChanged           = new \APS\EventSubscription(\APS\EventSubscription::Changed,                  "onServiceChanged");
             $onSubscriptionLimitChanged = new \APS\EventSubscription(\APS\EventSubscription::SubscriptionLimitChanged, "onSubscriptionLimitChanged");
 
             ## Event type string or Resource to subscribe to
-            $onDomainAvailable->source          = (object)array('type' => "http://parallels.com/aps/types/pa/dns/zone/1.0");
-            $onServiceChanged->source           = (object)array('id'   => $this->service->aps->id);
-            $onSubscriptionLimitChanged->source = (object)array('id'   => $this->subscription->aps->id);
+            $onDomainAvailable->source          = (object) array('type' => "http://parallels.com/aps/types/pa/dns/zone/1.0");
+            $onServiceChanged->source           = (object) array('id'   => $this->service->aps->id);
+            $onSubscriptionLimitChanged->source = (object) array('id'   => $this->subscription->aps->id);
 
             ## Subscribe to events on this account
             $this->APSC()->subscribe($this, $onDomainAvailable);
             $this->APSC()->subscribe($this, $onServiceChanged);
             $this->APSC()->subscribe($this, $onSubscriptionLimitChanged);
+
+            // Find most recent domain in the system
+            $latestDomain = reset(
+                $this->APSC()->getResources(
+                    "implementing(http://parallels.com/aps/types/pa/dns/zone/1.0),sort(-zoneId),limit(0,1)"
+                )
+            );
+            
+            // Make sure the most recent domain is not protected yet and if yes, start the protection procedure
+            $protectedDomain = $this->APSC()->getResources(
+                "implementing(http://aps.spamexperts.com/app/domain/1.0),eq(name," . $latestDomain->name . ")"
+            );
+            if (empty($protectedDomain)) {
+                $ev = new stdClass;
+                $ev->source = new stdClass;
+                $ev->source->id = $latestDomain->aps->id;
+
+                // This is a trick to avoid "Link operation is allowed only for resources with status aps:ready"
+                $this->aps->status = 'aps:ready';
+                $this->APSC()->updateResource($this);
+
+                $this->onDomainAvailable($ev);
+            }
+
         } else {
             $this->logger->error(__FUNCTION__ . ": Couldn't create SE account!");
             throw new Exception("ERROR: Couldn't create a SpamExperts account for the new subscription. More details can be found in the logs (if advanced logging has been enabled).");
@@ -362,36 +388,65 @@ class context extends \APS\ResourceBase
      */
     public function onDomainAvailable($event)
     {
-        $this->logger->info(__FUNCTION__ . ": start");
+        $this->logger->info(__METHOD__ . ": start");
 
         $domain = $this->APSC()->getResource($event->source->id);
 
-        $domainHostingApsId = $domain->hosting->aps->id;
-        $subscriptionApsId = $this->subscription->aps->id;
-        $subscriptionIsTheSame = $domainHostingApsId == $subscriptionApsId;
-        $subscriptionsWithAutoprovision =
-            $this->APSC()->getResources("and(implementing(http://aps.spamexperts.com/app/context/1.1),ge(auto_protect_domain.limit,1))");
-        $subscriptionsWithAutoprovisionCount = count($subscriptionsWithAutoprovision);
+        /**
+         * A domain should be auto-provisioned in 2 cases:
+         * 1 - If a subscription what adds the domain sends the event (we compare subscription IDs to check that)
+         * 2 - If the most recent subscription sends the event - it's teh case for the most fist domain
+         *
+         * Here the 1st scenario is being checked
+         */
+        $subscriptionIdsMatch = false;
+//        if (isset($domain->hosting->aps->id)) {
+//            $domainSubscriptionApsId = $domain->hosting->aps->id;
+//            $currentSubscriptionApsId = $this->subscription->aps->id;
+//            $subscriptionIdsMatch = $domainSubscriptionApsId == $currentSubscriptionApsId;
+//        }
 
-        $this->logger->info(__FUNCTION__ . ": auto_protect_domain is "
-            . (!empty($this->auto_protect_domain->limit) ? 'enabled' : 'disabled') . "; "
-            . "subscription is" . ($subscriptionIsTheSame ? '' : ' NOT') . " the same (domain hosting aps id={$domainHostingApsId}; subscription aps id={$subscriptionApsId}); "
-            . "subscriptions with auto protection enabled count - {$subscriptionsWithAutoprovisionCount}.");
+        /**
+         * And here we detect the most recent subscription and add the domain if this is the one
+         * (only if the 1st check has failed)
+         */
+        $latestSubscriptionCase = false;
+        if (!$subscriptionIdsMatch) {
+            $allSubscriptions = $this->APSC()->getResources("implementing(http://parallels.com/aps/types/pa/subscription/1.0)");
 
-        foreach ($subscriptionsWithAutoprovision as $sI => $subs) {
-            $this->logger->info("Subscriptions[{$sI}]: " . print_r($subs->subscription, true));
+            // Sort the subscriptions array by "subscriptionId" in reverse order
+            usort($allSubscriptions, function ($s1, $s2) {
+                $result = 0;
+
+                if (!empty($s1->subscriptionId) && !empty($s2->subscriptionId)) {
+                    $result = strnatcmp($s2->subscriptionId, $s1->subscriptionId);
+                }
+
+                return $result;
+            });
+            $latestSubscription = reset($allSubscriptions);
+            unset($allSubscriptions);
+
+            $latestSubscriptionCase = $latestSubscription->aps->id == $this->subscription->aps->id;
         }
 
-        // Protect domain if: auto protection is enabled and (the domain is being added to this subscription or if there's just one subscription with auto protection enabled)
-        if (!empty($this->auto_protect_domain->limit)
-            && ($subscriptionIsTheSame || 1 == $subscriptionsWithAutoprovisionCount)) {
-            $this->logger->info(__FUNCTION__ . ": New domain: " . $domain->name);
+        $autoProtectionEnabled = !isset($this->auto_protect_domain->limit) || '0' != $this->auto_protect_domain->limit;
+
+        $this->logger->info(__METHOD__ . ": auto_protect_domain is "
+            . ($autoProtectionEnabled ? 'enabled' : 'disabled') . "; "
+            . "subscription does " . ($subscriptionIdsMatch ? '' : 'NOT') . " match; "
+            . "is the latest subscription case - " . ($latestSubscriptionCase ? 'Yes' : 'No') . ".");
+
+        if ($autoProtectionEnabled
+            && ($subscriptionIdsMatch || $latestSubscriptionCase)) {
+
+            $this->logger->info(__METHOD__ . ": New domain: " . $domain->name);
 
             $this->APSN = array('type' => 'domain', 'name' => 'name');
             $this->updateResources(array($domain), true);
         }
 
-        $this->logger->info(__FUNCTION__ . ": stop");
+        $this->logger->info(__METHOD__ . ": stop");
     }
 
     /**
