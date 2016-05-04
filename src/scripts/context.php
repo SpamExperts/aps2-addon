@@ -400,11 +400,16 @@ class context extends \APS\ResourceBase
          * Here the 1st scenario is being checked
          */
         $subscriptionIdsMatch = false;
-//        if (isset($domain->hosting->aps->id)) {
-//            $domainSubscriptionApsId = $domain->hosting->aps->id;
-//            $currentSubscriptionApsId = $this->subscription->aps->id;
-//            $subscriptionIdsMatch = $domainSubscriptionApsId == $currentSubscriptionApsId;
-//        }
+        try {
+            $domainHosting = $domain->hosting;
+            if (isset($domainHosting) && isset($domainHosting->aps->id)) {
+                $domainSubscriptionApsId = $domainHosting->aps->id;
+                $currentSubscriptionApsId = $this->subscription->aps->id;
+                $subscriptionIdsMatch = $domainSubscriptionApsId == $currentSubscriptionApsId;
+            }
+        } catch (Exception $e) {
+            $this->logger->info(__METHOD__ . ": " . $e->getMessage());
+        }
 
         /**
          * And here we detect the most recent subscription and add the domain if this is the one
