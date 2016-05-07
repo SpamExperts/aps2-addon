@@ -279,19 +279,21 @@ class context extends \APS\ResourceBase
             );
             
             // Make sure the most recent domain is not protected yet and if yes, start the protection procedure
-            $protectedDomain = $this->APSC()->getResources(
-                "implementing(http://aps.spamexperts.com/app/domain/1.0),eq(name," . $latestDomain->name . ")"
-            );
-            if (empty($protectedDomain)) {
-                $ev = new stdClass;
-                $ev->source = new stdClass;
-                $ev->source->id = $latestDomain->aps->id;
+            if ($latestDomain) {
+                $protectedDomain = $this->APSC()->getResources(
+                    "implementing(http://aps.spamexperts.com/app/domain/1.0),eq(name," . $latestDomain->name . ")"
+                );
+                if (empty($protectedDomain)) {
+                    $ev = new stdClass;
+                    $ev->source = new stdClass;
+                    $ev->source->id = $latestDomain->aps->id;
 
-                // This is a trick to avoid "Link operation is allowed only for resources with status aps:ready"
-                $this->aps->status = 'aps:ready';
-                $this->APSC()->updateResource($this);
+                    // This is a trick to avoid "Link operation is allowed only for resources with status aps:ready"
+                    $this->aps->status = 'aps:ready';
+                    $this->APSC()->updateResource($this);
 
-                $this->onDomainAvailable($ev);
+                    $this->onDomainAvailable($ev);
+                }
             }
 
         } else {
