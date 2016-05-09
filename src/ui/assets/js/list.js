@@ -25,7 +25,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                             }
                         }
 
-                        return (likes.length ? "?not(or(" + likes.join(",") + "))" : "");
+                        return (likes.length ? "&not(or(" + likes.join(",") + "))" : "");
                     };
                     break;
             }
