@@ -393,6 +393,8 @@ class context extends \APS\ResourceBase
         $this->logger->info(__METHOD__ . ": start");
 
         $domain = $this->APSC()->getResource($event->source->id);
+        
+        $checkLatestSubscriptionCase = true;
 
         /**
          * A domain should be auto-provisioned in 2 cases:
@@ -408,6 +410,7 @@ class context extends \APS\ResourceBase
                 $domainSubscriptionApsId = $domainHosting->aps->id;
                 $currentSubscriptionApsId = $this->subscription->aps->id;
                 $subscriptionIdsMatch = $domainSubscriptionApsId == $currentSubscriptionApsId;
+                $checkLatestSubscriptionCase = false;
             }
         } catch (Exception $e) {
             $this->logger->info(__METHOD__ . ": " . $e->getMessage());
@@ -418,7 +421,7 @@ class context extends \APS\ResourceBase
          * (only if the 1st check has failed)
          */
         $latestSubscriptionCase = false;
-        if (!$subscriptionIdsMatch) {
+        if ($checkLatestSubscriptionCase && !$subscriptionIdsMatch) {
             $allSubscriptions = $this->APSC()->getResources("implementing(http://parallels.com/aps/types/pa/subscription/1.0)");
 
             // Sort the subscriptions array by "subscriptionId" in reverse order
@@ -441,7 +444,7 @@ class context extends \APS\ResourceBase
 
         $this->logger->info(__METHOD__ . ": auto_protect_domain is "
             . ($autoProtectionEnabled ? 'enabled' : 'disabled') . "; "
-            . "subscription does " . ($subscriptionIdsMatch ? '' : 'NOT') . " match; "
+            . "subscription does " . ($subscriptionIdsMatch ? '' : 'NOT ') . "match; "
             . "is the latest subscription case - " . ($latestSubscriptionCase ? 'Yes' : 'No') . ".");
 
         if ($autoProtectionEnabled
