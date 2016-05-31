@@ -1,8 +1,13 @@
 <?php
 
-#/* <- Add a '#' before the slash (/) to enable development mode and advanced logging; remove it when done
-define("APS_DEVELOPMENT_MODE", true); // Development & Testing Only
-/**/
+/** 
+ * Change the constant value to true to enable debug logging
+ * 
+ * WARNING: Debug logging means a lot more entries written into the log files
+ *          These files can be really huge - up to tens of gigabytes in a day, depending on the server load
+ *          Please only enable debug logging if this is requested by SpamExperts support staff
+ */
+define("APS_DEVELOPMENT_MODE", false);
 
 class Logger extends Monolog\Logger
 {
