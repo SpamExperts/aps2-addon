@@ -111,6 +111,14 @@ class service extends \APS\ResourceBase
             throw new Exception("The minimum supported version of the APS Runtime Library is v$MIN_APS_VERSION for POA 6.0 and up; you have version v$APS_VERSION. Please update your environment accordingly and try to reinstall the instance.");
         }
 
+        /**
+         * Subscribe to the "context available" event to auto-protect resources
+         * @see https://trac.spamexperts.com/ticket/28504
+         */
+        $onContextAvailable = new \APS\EventSubscription(\APS\EventSubscription::Available, "onContextAvailable");
+        $onContextAvailable->source = (object) array('type' => "http://aps.spamexperts.com/app/context/1.1");
+        $this->APSC()->subscribe($this, $onContextAvailable);
+
         $this->logger->info(__FUNCTION__ . ": stop");
     }
 
@@ -184,7 +192,28 @@ class service extends \APS\ResourceBase
         }
     }
 
-    private function APSC($resource = null)
+    /**
+     * @verb(POST)
+     * @path("/onContextAvailable")
+     * @param("http://aps-standard.org/types/core/resource/1.0#Notification",body)
+     */
+    public function onContextAvailable($event)
+    {
+        $this->logger->info(__METHOD__ . ": start");
+
+        /** @var context $context */
+        $context = $this->APSC()->getResource($event->source->id);
+        if (method_exists($context, 'autoprotectAll')) {
+            $context->autoprotectAll();
+        } else {
+            $this->logger->err(__METHOD__ . ": Resource {$event->source->id} has wrong datatype - "
+                . get_class($context));
+        }
+
+        $this->logger->info(__METHOD__ . ": stop");
+    }
+
+    private function APSC()
     {
         return $this->APSC ?: $this->APSC = \APS\Request::getController();
     }
