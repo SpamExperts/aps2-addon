@@ -600,7 +600,7 @@ class APIClient extends Guzzle\Http\Client
         $this->logger->debug(__FUNCTION__ . ": " . "Get reseller request");
 
         try {
-            $response = $this->get("/api/reseller/list/username/$username");
+            $response = $this->get("/api/reseller/list/username/$username/no_domains/1/");
             $response = $response->send()->getBody(true);
             $result = stripos($response, 'domainslimit') !== false ? (array)array_pop(json_decode($response)) : null;
             $result = array_pop($result);
