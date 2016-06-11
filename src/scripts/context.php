@@ -474,7 +474,7 @@ class context extends \APS\ResourceBase
     /**
      * @verb(PUT)
      * @path("/domainCheck")
-     * @param(string,query)
+     * @param(string,body)
      */
     public function domainCheck($IDs)
     {
@@ -488,7 +488,7 @@ class context extends \APS\ResourceBase
     /**
      * @verb(PUT)
      * @path("/domainProtect")
-     * @param(string,query)
+     * @param(string,body)
      */
     public function domainProtect($IDs)
     {
@@ -502,7 +502,7 @@ class context extends \APS\ResourceBase
     /**
      * @verb(PUT)
      * @path("/domainUnprotect")
-     * @param(string,query)
+     * @param(string,body)
      */
     public function domainUnprotect($IDs)
     {
@@ -519,7 +519,7 @@ class context extends \APS\ResourceBase
     /**
      * @verb(PUT)
      * @path("/emailCheck")
-     * @param(string,query)
+     * @param(string,body)
      */
     public function emailCheck($IDs)
     {
@@ -531,7 +531,7 @@ class context extends \APS\ResourceBase
     /**
      * @verb(PUT)
      * @path("/emailProtect")
-     * @param(string,query)
+     * @param(string,body)
      */
     public function emailProtect($IDs)
     {
@@ -545,7 +545,7 @@ class context extends \APS\ResourceBase
     /**
      * @verb(PUT)
      * @path("/emailUnprotect")
-     * @param(string,query)
+     * @param(string,body)
      */
     public function emailUnprotect($IDs)
     {

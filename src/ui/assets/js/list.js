@@ -171,7 +171,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                                                         grid = registry.byId("grid"),
                                                         items = grid.get("selectionArray");
 
-                                                    common.SEA(type + 'Check', { query: { IDs: JSON.stringify(items) }, method: "PUT" }).then(function() {
+                                                    common.SEA(type + 'Check', { data: JSON.stringify(items), method: "PUT" }).then(function() {
                                                         common.SEA(type + 's').then(function(resources) {
                                                             SEData = getSEData(resources);
                                                             registry.byId("grid").refresh();
@@ -196,7 +196,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                                                         grid = registry.byId("grid"),
                                                         items = grid.get("selectionArray");
 
-                                                    common.SEA(type + 'Protect', { query: { IDs: JSON.stringify(items) }, method: "PUT" }).then(function() {
+                                                    common.SEA(type + 'Protect', { data: JSON.stringify(items), method: "PUT" }).then(function() {
                                                         common.SEA(type + 's').then(function(resources) {
                                                             SEData = getSEData(resources);
                                                             registry.byId("grid").refresh();
@@ -221,7 +221,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                                                         grid = registry.byId("grid"),
                                                         items = grid.get("selectionArray");
 
-                                                    common.SEA(type + 'Unprotect', { query: { IDs: JSON.stringify(items) }, method: "PUT" }).then(function() {
+                                                    common.SEA(type + 'Unprotect', { data: JSON.stringify(items), method: "PUT" }).then(function() {
                                                         common.SEA(type + 's').then(function(resources) {
                                                             SEData = getSEData(resources);
                                                             registry.byId("grid").refresh();
