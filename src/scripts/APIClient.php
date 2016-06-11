@@ -109,7 +109,7 @@ class APIClient extends Guzzle\Http\Client
     {
         $this->logger->debug(__FUNCTION__ . ": " . "Domain user addition request");
 
-        $password = substr(str_shuffle(MD5(microtime())), 0, 10);
+        $password = substr(str_shuffle(md5(microtime())), 0, 10);
 
         try {
             $response = $this->get("/api/domainuser/add/domain/$domain/password/$password/email/contact@$domain");
@@ -150,9 +150,14 @@ class APIClient extends Guzzle\Http\Client
         $this->logger->debug(__FUNCTION__ . ": " . "Domain user protection check request");
 
         try {
-            $response = $this->get("/api/user/list/role/domain");
+            $response = $this->get("/api/user/get/username/" . $domain);
             $response = $response->send()->getBody(true);
-            $result = stripos($response, $domain) !== false;
+            if (!empty($response)) {
+                $userData = json_decode($response);
+                $result = !empty($userData['username']) && $userData['username'] == $domain;
+            } else {
+                $result = false;
+            }
         } catch (Exception $e) {
             $response = "Error: " . $e->getMessage() . " | Code: " . $e->getCode();
             $this->report->add($response, Report::ERROR);
@@ -176,7 +181,7 @@ class APIClient extends Guzzle\Http\Client
         }
 
         list($username, $domain) = explode('@', $email);
-        $password = substr(str_shuffle(MD5(microtime())), 0, 10);
+        $password = substr(str_shuffle(md5(microtime())), 0, 10);
 
         try {
             $response = $this->get("/api/emailusers/add/username/$username/password/$password/domain/$domain");
@@ -217,9 +222,14 @@ class APIClient extends Guzzle\Http\Client
         $this->logger->debug(__FUNCTION__ . ": " . "Email user protection check request");
 
         try {
-            $response = $this->get("/api/user/list/role/email");
+            $response = $this->get("/api/user/get/username/" . $email);
             $response = $response->send()->getBody(true);
-            $result = stripos($response, $email) !== false;
+            if (!empty($response)) {
+                $userData = json_decode($response);
+                $result = !empty($userData['username']) && $userData['username'] == $email;
+            } else {
+                $result = false;
+            }
         } catch (Exception $e) {
             $response = "Error: " . $e->getMessage() . " | Code: " . $e->getCode();
             $this->report->add($response, Report::ERROR);
