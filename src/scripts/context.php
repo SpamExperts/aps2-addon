@@ -766,37 +766,55 @@ class context extends \APS\ResourceBase
 
     private function createSEResource($resource)
     {
-        $this->logger->info(__FUNCTION__ . ": start");
+        $this->logger->info(__METHOD__ . ": start");
 
-        $this->logger->info(__FUNCTION__ . ": New SE {$this->APSN['type']} resource");
-        $SEResource = \APS\TypeLibrary::newResourceByTypeId("http://aps.spamexperts.com/app/{$this->APSN['type']}/1.0");
+        // If a SE resource already exists then it should not be duplicated
+        if ($existingResource = $this->getSEResource($resource->{$this->APSN['name']}, '/aps/2/resources')) {
+            $this->logger->info(
+                __METHOD__ . ": SE {$this->APSN['type']} resource already exists, skip re-creating it"
+            );
 
-        ## Set resource properties
-        $SEResource->name = $resource->{$this->APSN['name']};
-        $SEResource->status = false;
+            $return = $existingResource;
+        } else {
 
-        ## Set resource links
-        $SEResource->aps->links[0] = new \APS\Link($resource, $this->APSN['type'], $SEResource);
+            $this->logger->info(__METHOD__ . ": New SE {$this->APSN['type']} resource");
+            $SEResource = \APS\TypeLibrary::newResourceByTypeId("http://aps.spamexperts.com/app/{$this->APSN['type']}/1.0");
 
-        ## If email, link domain
-        $email_a = explode('@', $resource->{$this->APSN['name']});
-        if (isset($email_a[1])) {
-            $SEResource->aps->links[1] = new \APS\Link($this->getSEResource($email_a[1]), 'domain', $SEResource);
+            ## Set resource properties
+            $SEResource->name = $resource->{$this->APSN['name']};
+            $SEResource->status = false;
+
+            ## Set resource links
+            $SEResource->aps->links[0] = new \APS\Link($resource, $this->APSN['type'], $SEResource);
+
+            ## If email, link domain
+            $email_a = explode('@', $resource->{$this->APSN['name']});
+            if (isset($email_a[1])) {
+                $SEResource->aps->links[1] = new \APS\Link($this->getSEResource($email_a[1]), 'domain', $SEResource);
+            }
+
+            ## Link SE resource to the context
+            $this->logger->info(__METHOD__ . ": Linking SE {$this->APSN['type']} resource to context");
+            $result = $this->APSC()->linkResource($this, "{$this->APSN['type']}s", $SEResource);
+
+            $return = $result ? $this->getSEResource($SEResource->name) : false;
         }
 
-        ## Link SE resource to the context
-        $this->logger->info(__FUNCTION__ . ": Linking SE {$this->APSN['type']} resource to context");
-        $result = $this->APSC()->linkResource($this, "{$this->APSN['type']}s", $SEResource);
+        $this->logger->info(__METHOD__ . ": stop");
 
-        $this->logger->info(__FUNCTION__ . ": stop");
-
-        return $result ? $this->getSEResource($SEResource->name) : false;
+        return $return;
     }
 
-    private function getSEResource($name)
+    private function getSEResource($name, $path = null)
     {
         $type = count(explode('@', $name)) == 1 ? "domain" : "email";
-        return array_pop($this->APSC()->getResources("and(implementing(http://aps.spamexperts.com/app/$type/1.0),like(name,$name))", "/aps/2/resources/{$this->aps->id}/{$type}s"));
+
+        return array_pop(
+            $this->APSC()->getResources(
+                "and(implementing(http://aps.spamexperts.com/app/$type/1.0),like(name,$name))",
+                null === $path ? "/aps/2/resources/{$this->aps->id}/{$type}s" : $path
+            )
+        );
     }
 
     private function getResource($name)
