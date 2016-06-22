@@ -154,7 +154,8 @@ class APIClient extends Guzzle\Http\Client
             $response = $response->send()->getBody(true);
             if (!empty($response)) {
                 $userData = json_decode($response, true);
-                $result = !empty($userData['username']) && $userData['username'] == $domain;
+                $result = !empty($userData['username'])
+                    && strtolower($userData['username']) == strtolower($domain);
             } else {
                 $result = false;
             }
@@ -226,7 +227,8 @@ class APIClient extends Guzzle\Http\Client
             $response = $response->send()->getBody(true);
             if (!empty($response)) {
                 $userData = json_decode($response, true);
-                $result = !empty($userData['username']) && $userData['username'] == $email;
+                $result = !empty($userData['username']) 
+                    && strtolower($userData['username']) == strtolower($email);
             } else {
                 $result = false;
             }
