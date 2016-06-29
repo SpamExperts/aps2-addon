@@ -17,6 +17,6 @@
         "monolog/monolog": "1.10.*"
     },
     "autoload": {
-        "files": ["APIClient.php", "Logger.php", "Report.php"]
+        "files": ["APIClient.php", "Logger.php", "Report.php", "App.php"]
     }
 }

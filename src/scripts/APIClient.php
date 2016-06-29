@@ -11,7 +11,7 @@ class APIClient extends Guzzle\Http\Client
     {
         parent::__construct("http" . ($service->ssl ? 's' : '') . "://{$service->hostname}");
         $this->report  = new Report($this->logger = new Logger("API_Client"));
-        $this->setUserAgent("ProSpamFilter/2.0-9");
+        $this->setUserAgent("ProSpamFilter/" . App::VERSION);
         $this->setDefaultOption('auth', array($service->username, $service->password));
         $this->setDefaultOption('verify', false);
         $this->addSubscriber(new Guzzle\Plugin\Log\LogPlugin(new Guzzle\Log\MonologLogAdapter($this->logger), Guzzle\Log\MessageFormatter::DEBUG_FORMAT));

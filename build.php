@@ -22,6 +22,13 @@ if (isset($options['help'])) {
     exit(implode("\n", $information) . "\n");
 }
 
+/** Use correct version id @see https://trac.spamexperts.com/ticket/28164 */
+$appMeta = simplexml_load_file(__DIR__ . '/src/APP-META.xml');
+$versionId = "{$appMeta->version}-{$appMeta->release}";
+$appFile = __DIR__ . '/src/scripts/App.php';
+$appFileContents = file_get_contents($appFileContents);
+file_put_contents($appFile, strtr($appFileContents, [ '{{{ VERSION }}}' => $versionId ]));
+
 $app = !empty($options['dir']) ? $options['dir'] : "spamexperts";
 
 if (file_exists($app)) {
@@ -47,3 +54,5 @@ if (!isset($options['dev'])) {
         echo (implode("\n", $result) . "\n");
     }
 };
+
+echo `git checkout -- $appFile`;

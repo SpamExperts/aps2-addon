@@ -86,7 +86,6 @@ class service extends \APS\ResourceBase
      */
     public $ssl;
 
-    const VERSION = "2.0-9";
     const MIN_APS_VERSION = "2.1";
 
     /** @var $logger Logger */
@@ -138,7 +137,7 @@ class service extends \APS\ResourceBase
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
-        $this->logger->info(__FUNCTION__ . ": Upgrading from $version to " . self::VERSION);
+        $this->logger->info(__FUNCTION__ . ": Upgrading from $version to " . App::VERSION);
 
         switch($version) {
             case "2.0-3":
