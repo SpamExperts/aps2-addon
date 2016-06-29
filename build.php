@@ -26,7 +26,7 @@ if (isset($options['help'])) {
 $appMeta = simplexml_load_file(__DIR__ . '/src/APP-META.xml');
 $versionId = "{$appMeta->version}-{$appMeta->release}";
 $appFile = __DIR__ . '/src/scripts/App.php';
-$appFileContents = file_get_contents($appFileContents);
+$appFileContents = file_get_contents($appFile);
 file_put_contents($appFile, strtr($appFileContents, [ '{{{ VERSION }}}' => $versionId ]));
 
 $app = !empty($options['dir']) ? $options['dir'] : "spamexperts";
