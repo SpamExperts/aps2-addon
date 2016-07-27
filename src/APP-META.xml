@@ -2,7 +2,7 @@
     <id>http://aps.spamexperts.com/app</id>
     <name>SpamExperts</name>
     <version>2.0</version>
-    <release>9</release>
+    <release>10</release>
     <homepage>http://www.spamexperts.com/</homepage>
 
     <vendor>
@@ -57,6 +57,9 @@
                 <entry>Implemented automatic protection of all resources when the application is added to the existing account.</entry>
                 <entry>Spampanel domain- and email user verification procedure has been optimized.</entry>
                 <entry>Resource ID lists are sent in PUT request body instead of query string to avoid too long URLs.</entry>
+            </version>
+            <version version="2.0" release="10">
+                <entry>Case-insensitive usernames comparison when checking user presence in the SpamFilter.</entry>
             </version>
         </changelog>
 
