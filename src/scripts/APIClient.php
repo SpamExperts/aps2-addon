@@ -90,7 +90,7 @@ class APIClient extends Guzzle\Http\Client
                 (isset($products["archiving"]) ? "/archiving/" . $products["archiving"] : "")
             );
             $response = $response->send()->getBody(true); // skip for 5.4 (GuzzleHttp)
-            $result = stripos($response, 'success') !== false;
+            $result = stripos($response, 'error') === false;
         } catch (Exception $e) {
             $response = "Error: " . $e->getMessage() . " | Code: " . $e->getCode();
             $this->report->add($response, Report::ERROR);
