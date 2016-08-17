@@ -903,7 +903,8 @@ class context extends \APS\ResourceBase
         $this->logger->info(__FUNCTION__ . ": Creating SE account");
         $domainLimit = $this->getLimit("http://aps.spamexperts.com/app/domain/1.0");
         $domainLimit = isset($domainLimit) ? $domainLimit : 0;
-        $result = $this->API()->addReseller($this->username, $this->password, $this->admin->email, $domainLimit);
+        $result = $this->API()->addReseller($this->username, $this->password, $this->admin->email, $domainLimit) &&
+                  $this->API()->setResellerProducts($this->username, $products);
 
         $this->logger->info(__FUNCTION__ . ": stop");
 
