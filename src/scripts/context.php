@@ -809,19 +809,22 @@ class context extends \APS\ResourceBase
     {
         $type = count(explode('@', $name)) == 1 ? "domain" : "email";
 
-        return array_pop(
-            $this->APSC()->getResources(
-                "and(implementing(http://aps.spamexperts.com/app/$type/1.0),like(name,$name))",
-                null === $path ? "/aps/2/resources/{$this->aps->id}/{$type}s" : $path
-            )
+        $resources = $this->APSC()->getResources(
+            "and(implementing(http://aps.spamexperts.com/app/$type/1.0),like(name,$name))",
+            null === $path ? "/aps/2/resources/{$this->aps->id}/{$type}s" : $path
         );
+
+        return array_pop($resources);
     }
 
     private function getResource($name)
     {
         $by_name = count(explode('@', $name)) == 1 ? 'name' : 'login';
         $type = $by_name == 'name' ? "http://parallels.com/aps/types/pa/dns/zone/1.0" : "http://aps-standard.org/types/core/service-user/1.0";
-        return array_pop($this->APSC()->getResources("and(implementing($type),like($by_name,$name))"));
+
+        $resources = $this->APSC()->getResources("and(implementing($type),like($by_name,$name))");
+
+        return array_pop($resources);
     }
 
     private function checkProtectionStatus($name)
@@ -1028,7 +1031,12 @@ class context extends \APS\ResourceBase
                 if (count($pa_records)) {
                     $this->logger->info(__FUNCTION__ . ": Replacing existing PA MX RRs with the first created SE MX RR");
                     $SEMX = array_pop($SEMXs);
-                    $record = array_pop($this->APSC()->getResources("and(implementing(http://parallels.com/aps/types/pa/dns/record/mx/1.0),like(exchange,{$SEMX}))", "/aps/2/resources/{$domain->aps->id}/records"));
+
+                    $resources = $this->APSC()->getResources(
+                        "and(implementing(http://parallels.com/aps/types/pa/dns/record/mx/1.0),like(exchange,{$SEMX}))", "/aps/2/resources/{$domain->aps->id}/records"
+                    );
+
+                    $record = array_pop($resources);
                     foreach ($pa_records as $pa_record) {
                         $this->APSC()->linkResource($record, 'replaces', $pa_record);
                     }
