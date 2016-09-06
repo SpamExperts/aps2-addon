@@ -30,12 +30,12 @@ class context extends \APS\ResourceBase
      */
     public $account;
 
-    ## Strong link with the admin user (information for setting up the SE account)
+    ## Strong link with admin users (information for setting up the SE account)
     /**
-     * @link("http://parallels.com/aps/types/pa/admin-user/1.0")
+     * @link("http://parallels.com/aps/types/pa/admin-user/1.0[]")
      * @required
      */
-    public $admin;
+    public $admins;
 
     ## Link to a collection of SE domain resources
     /**
@@ -246,7 +246,7 @@ class context extends \APS\ResourceBase
 
         $this->logger->info(__FUNCTION__ . ": Provisioning context");
 
-        $this->username = $this->admin->login . '_' . $this->subscription->subscriptionId;
+        $this->username = $this->admins[0]->login . '_' . $this->subscription->subscriptionId;
         $this->password = md5($this->aps->id);
         $this->mx       = $this->getServiceMXRecords();
 
@@ -462,7 +462,7 @@ class context extends \APS\ResourceBase
 
         $this->logger->info(__FUNCTION__ . ": Updating reseller ($this->username : domainLimit => $domainLimit)");
 
-        $this->API()->updateReseller($this->username, $this->password, $this->admin->email, $domainLimit);
+        $this->API()->updateReseller($this->username, $this->password, $this->admins[0]->email, $domainLimit);
 
         $this->logger->info(__FUNCTION__ . ": stop");
     }
@@ -606,7 +606,7 @@ class context extends \APS\ResourceBase
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
-        $this->API()->updateReseller($this->username, $this->password, $this->admin->email);
+        $this->API()->updateReseller($this->username, $this->password, $this->admins[0]->email);
 
         $this->logger->info(__FUNCTION__ . ": stop");
     }
@@ -906,7 +906,7 @@ class context extends \APS\ResourceBase
         $this->logger->info(__FUNCTION__ . ": Creating SE account");
         $domainLimit = $this->getLimit("http://aps.spamexperts.com/app/domain/1.0");
         $domainLimit = isset($domainLimit) ? $domainLimit : 0;
-        $result = $this->API()->addReseller($this->username, $this->password, $this->admin->email, $domainLimit) &&
+        $result = $this->API()->addReseller($this->username, $this->password, $this->admins[0]->email, $domainLimit) &&
                   $this->API()->setResellerProducts($this->username, $products);
 
         $this->logger->info(__FUNCTION__ . ": stop");
