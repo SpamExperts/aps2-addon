@@ -89,7 +89,8 @@ class service extends \APS\ResourceBase
     /**
      * @type(string)
      * @title("Update usage data")
-     * @description("Select a day of the week to run counters update to reduce the spamfilter API load. Select the empty option to run every day.")
+     * @description("Select a day of the week to run counters update to reduce the spamfilter API load.")
+     * @option("", "every day")
      * @option("Mon", "on Monday")
      * @option("Tue", "on Tuesday")
      * @option("Wed", "on Wednesday")
@@ -102,8 +103,9 @@ class service extends \APS\ResourceBase
 
     /**
      * @type(string)
-     * @title("Update usage data")
-     * @description("Select a specific hour to run counters update to reduce the spamfilter API load. Select the empty option to run every hour.")
+     * @title("")
+     * @description("Select a specific hour to run counters update to reduce the spamfilter API load.")
+     * @option("", "every hour")
      * @option("0", "00:00")
      * @option("1", "01:00")
      * @option("2", "02:00")
