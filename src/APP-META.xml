@@ -78,7 +78,7 @@
         </languages>
 
         <navigation id="ccp" label="SpamExperts">
-            <var name="context" type-id="http://aps.spamexperts.com/app/context/1.1"/>
+            <var name="context" type-id="http://aps.spamexperts.com/app/context/2.0"/>
             <plugs-to id="http://www.aps-standard.org/ui/service"/>
             <item id="domains" label="Domains">
                 <view id="domains" label="Domains">
@@ -96,14 +96,14 @@
 
         <navigation id="suwizard">
             <view id="suwizard.new" label="New SE Email User">
-                <var name="context" type-id="http://aps.spamexperts.com/app/context/1.1"/>
+                <var name="context" type-id="http://aps.spamexperts.com/app/context/2.0"/>
                 <plugs-to id="http://www.aps-standard.org/ui/service/suwizard.new"/>
             </view>
             <view id="suwizard.overview" label="SE Overview">
                 <plugs-to id="http://www.aps-standard.org/ui/service/suwizard.overview"/>
             </view>
             <view id="suservice.view" label="Settings">
-                <var name="context" type-id="http://aps.spamexperts.com/app/context/1.1"/>
+                <var name="context" type-id="http://aps.spamexperts.com/app/context/2.0"/>
                 <plugs-to id="http://www.aps-standard.org/ui/service/suservice.view"/>
             </view>
         </navigation>

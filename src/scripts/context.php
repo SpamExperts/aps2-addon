@@ -4,7 +4,7 @@ require_once "aps/2/runtime.php";
 
 /**
  * Class context
- * @type("http://aps.spamexperts.com/app/context/1.1")
+ * @type("http://aps.spamexperts.com/app/context/2.0")
  * @implements("http://aps-standard.org/types/core/resource/1.0")
  */
 class context extends \APS\ResourceBase
