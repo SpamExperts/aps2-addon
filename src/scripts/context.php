@@ -30,6 +30,12 @@ class context extends \APS\ResourceBase
      */
     public $account;
 
+    ## Strong link with admin users (this one is obsolete and will be removed in next releases)
+    /**
+     * @link("http://parallels.com/aps/types/pa/admin-user/1.0")
+     */
+    public $admin;
+
     ## Strong link with admin users (information for setting up the SE account)
     /**
      * @link("http://parallels.com/aps/types/pa/admin-user/1.0[]")
