@@ -11,7 +11,7 @@ class domain extends \APS\ResourceBase
 {
     ## Strong link with the context
     /**
-     * @link("http://aps.spamexperts.com/app/context/2.0")
+     * @link("http://aps.spamexperts.com/app/context/2.2")
      * @required
      */
     public $context;

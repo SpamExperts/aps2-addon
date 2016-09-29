@@ -105,11 +105,11 @@ class serviceTest extends PHPUnit_Framework_TestCase
         $context    = $this->getMockBuilder('context')->disableOriginalConstructor()->getMock();
         $API        = $this->getMockBuilder('APIClient')->disableOriginalConstructor()->getMock();
 
-        $context->admins = [new stdClass()];
+        $context->admin = new stdClass;
         $context->aps = new stdClass();
 
-        $context->admins[0]->login = "reseller";
-        $context->admin[0]->email = "email@domain.test";
+        $context->admin->login = "reseller";
+        $context->admin->email = "email@domain.test";
         $context->aps->id      = "id";
 
         $products = array();
@@ -127,13 +127,13 @@ class serviceTest extends PHPUnit_Framework_TestCase
         $API->expects($this->exactly($resellerExpectation))
             ->method('addReseller')
             ->with(
-                $this->equalTo($context->admins[0]->login),
+                $this->equalTo($context->admin->login),
                 $this->equalTo(md5($context->aps->id)),
-                $this->equalTo($context->admins[0]->email)
+                $this->equalTo($context->admin->email)
             );
         $API->expects($this->exactly($productExpectation))
             ->method('setResellerProducts')
-            ->with($this->equalTo($context->admins[0]->login), $this->equalTo($products));
+            ->with($this->equalTo($context->admin->login), $this->equalTo($products));
 
         $service->auto_add_domains = $domainAutoAdd;
         $service->auto_add_emails  = $emailAutoAdd;

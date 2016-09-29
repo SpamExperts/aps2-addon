@@ -4,7 +4,7 @@ require_once "aps/2/runtime.php";
 
 /**
  * Class context
- * @type("http://aps.spamexperts.com/app/context/2.0")
+ * @type("http://aps.spamexperts.com/app/context/2.2")
  * @implements("http://aps-standard.org/types/core/resource/1.0")
  */
 class context extends \APS\ResourceBase
@@ -31,17 +31,7 @@ class context extends \APS\ResourceBase
     public $account;
 
     ## Strong link with admin users (this one is obsolete and will be removed in next releases)
-    /**
-     * @link("http://parallels.com/aps/types/pa/admin-user/1.0")
-     */
     public $admin;
-
-    ## Strong link with admin users (information for setting up the SE account)
-    /**
-     * @link("http://parallels.com/aps/types/pa/admin-user/1.0[]")
-     * @required
-     */
-    public $admins;
 
     ## Link to a collection of SE domain resources
     /**
@@ -223,6 +213,13 @@ class context extends \APS\ResourceBase
     public $password;
 
     /**
+     * @type(string)
+     * @title("Admin Email")
+     * @description("The SE admin email address")
+     */
+    public $adminEmail;
+
+    /**
      * @type(string[])
      * @title("MX records")
      * @description("The current MX record array")
@@ -252,9 +249,14 @@ class context extends \APS\ResourceBase
 
         $this->logger->info(__FUNCTION__ . ": Provisioning context");
 
-        $this->username = $this->admins[0]->login . '_' . $this->subscription->subscriptionId;
-        $this->password = md5($this->aps->id);
-        $this->mx       = $this->getServiceMXRecords();
+        $adminsFound = $this->APSC()->getResources('implementing(http://parallels.com/aps/types/pa/admin-user/1.0)');
+        if ($adminsFound[0]) {
+            $this->username = $adminsFound[0]->login . '_' . $this->subscription->subscriptionId;
+            $this->password = md5($this->aps->id);
+            $this->adminEmail = $adminsFound[0]->email;
+        }
+
+        $this->mx = $this->getServiceMXRecords();
 
         ## Create a new reseller container for the account
         $this->logger->info(__FUNCTION__ . ": Creating new SE account");
@@ -468,7 +470,7 @@ class context extends \APS\ResourceBase
 
         $this->logger->info(__FUNCTION__ . ": Updating reseller ($this->username : domainLimit => $domainLimit)");
 
-        $this->API()->updateReseller($this->username, $this->password, $this->admins[0]->email, $domainLimit);
+        $this->API()->updateReseller($this->username, $this->password, $this->adminEmail, $domainLimit);
 
         $this->logger->info(__FUNCTION__ . ": stop");
     }
@@ -612,7 +614,7 @@ class context extends \APS\ResourceBase
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
-        $this->API()->updateReseller($this->username, $this->password, $this->admins[0]->email);
+        $this->API()->updateReseller($this->username, $this->password, $this->adminEmail);
 
         $this->logger->info(__FUNCTION__ . ": stop");
     }
@@ -656,7 +658,6 @@ class context extends \APS\ResourceBase
 
 
     ### Helper functions
-
 
     ## Resources
 
@@ -912,7 +913,7 @@ class context extends \APS\ResourceBase
         $this->logger->info(__FUNCTION__ . ": Creating SE account");
         $domainLimit = $this->getLimit("http://aps.spamexperts.com/app/domain/1.0");
         $domainLimit = isset($domainLimit) ? $domainLimit : 0;
-        $result = $this->API()->addReseller($this->username, $this->password, $this->admins[0]->email, $domainLimit) &&
+        $result = $this->API()->addReseller($this->username, $this->password, $this->adminEmail, $domainLimit) &&
                   $this->API()->setResellerProducts($this->username, $products);
 
         $this->logger->info(__FUNCTION__ . ": stop");

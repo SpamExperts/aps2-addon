@@ -12,7 +12,7 @@ class service extends \APS\ResourceBase
     ## Link with a collection of contexts
 
     /**
-     * @link("http://aps.spamexperts.com/app/context/2.0[]")
+     * @link("http://aps.spamexperts.com/app/context/2.2[]")
      */
     public $contexts;
 
@@ -115,7 +115,7 @@ class service extends \APS\ResourceBase
          * @see https://trac.spamexperts.com/ticket/28504
          */
         $onContextAvailable = new \APS\EventSubscription(\APS\EventSubscription::Available, "onContextAvailable");
-        $onContextAvailable->source = (object) array('type' => "http://aps.spamexperts.com/app/context/2.0");
+        $onContextAvailable->source = (object) array('type' => "http://aps.spamexperts.com/app/context/2.2");
         $this->APSC()->subscribe($this, $onContextAvailable);
 
         $this->logger->info(__FUNCTION__ . ": stop");
@@ -155,7 +155,7 @@ class service extends \APS\ResourceBase
             case "2.0-11":
             case "2.0-12":
             case "2.0-13":
-                $this->contextUpgrade("2.0");
+                $this->contextUpgrade("2.2");
 
                 break;
         }
@@ -202,12 +202,12 @@ class service extends \APS\ResourceBase
 
                 break;
 
-            case "2.0":
-                $this->logger->info(__METHOD__ . ": Upgrading contexts from 1.1 to 2.0");
+            case "2.2":
+                $this->logger->info(__METHOD__ . ": Upgrading contexts from 1.1 to 2.2");
 
                 $contexts = $this->APSC()->getResources('implementing(http://aps.spamexperts.com/app/context/1.1)');
                 foreach ($contexts as $context) {
-                    $context->aps->type = "http://aps.spamexperts.com/app/context/2.0";
+                    $context->aps->type = "http://aps.spamexperts.com/app/context/2.2";
                     $this->APSC()->updateResource($context);
                 }
 
