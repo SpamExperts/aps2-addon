@@ -12,7 +12,7 @@ class service extends \APS\ResourceBase
     ## Link with a collection of contexts
 
     /**
-     * @link("http://aps.spamexperts.com/app/context/2.2[]")
+     * @link("http://aps.spamexperts.com/app/context/2.0[]")
      */
     public $contexts;
 
@@ -115,7 +115,7 @@ class service extends \APS\ResourceBase
          * @see https://trac.spamexperts.com/ticket/28504
          */
         $onContextAvailable = new \APS\EventSubscription(\APS\EventSubscription::Available, "onContextAvailable");
-        $onContextAvailable->source = (object) array('type' => "http://aps.spamexperts.com/app/context/2.2");
+        $onContextAvailable->source = (object) array('type' => "http://aps.spamexperts.com/app/context/2.0");
         $this->APSC()->subscribe($this, $onContextAvailable);
 
         $this->logger->info(__FUNCTION__ . ": stop");
@@ -141,10 +141,9 @@ class service extends \APS\ResourceBase
 
         switch($version) {
             case "2.0-3":
-                $this->contextUpgrade("1.1");
-                break;
             case "2.0-4":
                 $this->contextUpgrade("1.1");
+
                 break;
             case "2.0-5":
             case "2.0-6":
@@ -156,10 +155,7 @@ class service extends \APS\ResourceBase
             case "2.0-12":
             case "2.0-13":
             case "2.0-14":
-            case "2.0-15":
-            case "2.0-16":
-            case "2.0-17":
-                $this->contextUpgrade("2.2");
+                $this->contextUpgrade("2.0");
 
                 break;
         }
@@ -206,12 +202,16 @@ class service extends \APS\ResourceBase
 
                 break;
 
-            case "2.2":
+            case "2.0":
                 $this->logger->info(__METHOD__ . ": Upgrading contexts from 1.1 to 2.2");
 
                 $contexts = $this->APSC()->getResources('implementing(http://aps.spamexperts.com/app/context/1.1)');
                 foreach ($contexts as $context) {
-                    $context->aps->type = "http://aps.spamexperts.com/app/context/2.2";
+                    $context->aps->type = "http://aps.spamexperts.com/app/context/2.0";
+
+                    $context->adminEmail = $context->admin->email;
+                    unset($context->admin);
+
                     $this->APSC()->updateResource($context);
                 }
 

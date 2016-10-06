@@ -4,7 +4,7 @@ require_once "aps/2/runtime.php";
 
 /**
  * Class context
- * @type("http://aps.spamexperts.com/app/context/2.2")
+ * @type("http://aps.spamexperts.com/app/context/2.0")
  * @implements("http://aps-standard.org/types/core/resource/1.0")
  */
 class context extends \APS\ResourceBase
@@ -29,9 +29,6 @@ class context extends \APS\ResourceBase
      * @required
      */
     public $account;
-
-    ## Strong link with admin users (this one is obsolete and will be removed in next releases)
-    public $admin;
 
     ## Link to a collection of SE domain resources
     /**
