@@ -2,7 +2,7 @@
     <id>http://aps.spamexperts.com/app</id>
     <name>SpamExperts</name>
     <version>2.0</version>
-    <release>12</release>
+    <release>13</release>
     <homepage>http://www.spamexperts.com/</homepage>
 
     <vendor>
@@ -64,7 +64,7 @@
             <version version="2.0" release="11">
                 <entry>Fixed failed provisioning procedure for accounts without some products.</entry>
             </version>
-            <version version="2.0" release="12">
+            <version version="2.0" release="13">
                 <entry>Implemented the possibility to avoid all resource counters update hourly, flooding the API.</entry>
             </version>
         </changelog>
