@@ -203,16 +203,44 @@ class service extends \APS\ResourceBase
                 break;
 
             case "2.0":
-                $this->logger->info(__METHOD__ . ": Upgrading contexts from 1.1 to 2.2");
+                $this->logger->info(__METHOD__ . ": Upgrading contexts from 1.1 to 2.0");
 
-                $contexts = $this->APSC()->getResources('implementing(http://aps.spamexperts.com/app/context/1.1)');
-                foreach ($contexts as $context) {
-                    $context->aps->type = "http://aps.spamexperts.com/app/context/2.0";
+                $io = $this->APSC()->getIo();
+                $start = 0;
+                while (true) {
+                    $contextsCollectionJson = $io->sendRequest(
+                        \APS\Proto::GET,
+                        "aps/2/resources/?implementing(http://aps.spamexperts.com/app/context/1.1),limit($start,1000)"
+                    );
+                    $contextsCollection = json_decode($contextsCollectionJson);
+                    if (!empty($contextsCollection) && is_array($contextsCollection)) {
+                        foreach ($contextsCollection as $ctx) {
+                            $contextJson = $io->sendRequest(
+                                \APS\Proto::GET,
+                                "aps/2/resources/{$ctx->aps->id}"
+                            );
+                            $contextObject = json_decode($contextJson, false);
+                            if ($contextObject) {
+                                $contextObject->aps->type = "http://aps.spamexperts.com/app/context/2.0";
+                                unset($contextObject->admin);
 
-                    $context->adminEmail = $context->admin->email;
-                    unset($context->admin);
+                                $io->sendRequest(
+                                    \APS\Proto::PUT,
+                                    "aps/2/resources/{$ctx->aps->id}",
+                                    json_encode($contextObject)
+                                );
+                            } else {
+                                $this->logger->info(
+                                    __METHOD__
+                                        . ": Context {$ctx->aps->id} - either bad JSON or no admin relation detected"
+                                );
+                            }
+                        }
+                    } else {
+                        break;
+                    }
 
-                    $this->APSC()->updateResource($context);
+                    $start += 1000;
                 }
 
                 break;
