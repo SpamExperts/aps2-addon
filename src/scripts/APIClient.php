@@ -36,7 +36,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
         
         return $result;
     }
@@ -55,7 +55,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -74,7 +74,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -97,7 +97,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -121,7 +121,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -140,7 +140,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -165,7 +165,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -194,7 +194,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -213,7 +213,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -238,7 +238,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -262,7 +262,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -281,7 +281,7 @@ class APIClient extends Guzzle\Http\Client
             $result = 0;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -300,7 +300,7 @@ class APIClient extends Guzzle\Http\Client
             $result = 0;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -320,7 +320,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -344,7 +344,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -363,7 +363,7 @@ class APIClient extends Guzzle\Http\Client
             $result = 0;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -382,7 +382,7 @@ class APIClient extends Guzzle\Http\Client
             $result = 0;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -402,7 +402,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -425,7 +425,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -444,7 +444,7 @@ class APIClient extends Guzzle\Http\Client
             $result = 0;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -464,7 +464,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -484,7 +484,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -504,7 +504,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -559,7 +559,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -578,7 +578,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -602,7 +602,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -622,7 +622,7 @@ class APIClient extends Guzzle\Http\Client
             $result = null;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -647,7 +647,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -667,7 +667,7 @@ class APIClient extends Guzzle\Http\Client
             $result = null;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -695,7 +695,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -714,7 +714,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -736,7 +736,7 @@ class APIClient extends Guzzle\Http\Client
             $result = false;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }
@@ -755,7 +755,7 @@ class APIClient extends Guzzle\Http\Client
             $result = null;
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result) . " Response: " . var_export($response, true));
+        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
     }

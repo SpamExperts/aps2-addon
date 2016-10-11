@@ -64,6 +64,9 @@
             <version version="2.0" release="11">
                 <entry>Fixed failed provisioning procedure for accounts without some products.</entry>
             </version>
+            <version version="2.0" release="12">
+                <entry>Resolved issue when retrieving context resources.</entry>
+            </version>
             <version version="2.0" release="13">
                 <entry>Implemented the possibility to avoid all resource counters update hourly, flooding the API.</entry>
             </version>
@@ -95,14 +98,14 @@
         </navigation>
 
         <navigation id="suwizard">
-            <view id="suwizard-new" label="New SE Email User">
+            <view id="suwizard.new" label="New SE Email User">
                 <var name="context" type-id="http://aps.spamexperts.com/app/context/1.1"/>
                 <plugs-to id="http://www.aps-standard.org/ui/service/suwizard.new"/>
             </view>
-            <view id="suwizard-overview" label="SE Overview">
+            <view id="suwizard.overview" label="SE Overview">
                 <plugs-to id="http://www.aps-standard.org/ui/service/suwizard.overview"/>
             </view>
-            <view id="suservice-view" label="Settings">
+            <view id="suservice.view" label="Settings">
                 <var name="context" type-id="http://aps.spamexperts.com/app/context/1.1"/>
                 <plugs-to id="http://www.aps-standard.org/ui/service/suservice.view"/>
             </view>
