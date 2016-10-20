@@ -21,22 +21,58 @@ class APIClient extends Guzzle\Http\Client
 
     public function addDomain($domain, $destinations = null, $aliases = null)
     {
-        $this->logger->debug(__FUNCTION__ . ": " . "Domain addition request");
+        $this->logger->debug(__METHOD__ . ": " . "Domain addition request");
+
+        $result = false;
+        $rawResponses = '';
+
         try {
-            $response = $this->get(
-                "/api/domain/add/domain/$domain"  .
+            $domainAddResponse = $this->get(
+                "/api/domain/add/domain/$domain/format/json"  .
                 (is_array($destinations) ? "/destinations/" . json_encode($destinations) : "") .
                 (is_array($aliases)      ? "/aliases/"      . json_encode($aliases)      : "")
             );
-            $response = $response->send()->getBody(true); // skip for 5.4 (GuzzleHttp)
-            $result = stripos($response, 'added') !== false || stripos($response, 'already') !== false;
+            $domainAddResponseRaw = $domainAddResponse->send()->getBody(true); // skip for 5.4 (GuzzleHttp)
+            $rawResponses .= $domainAddResponseRaw;
+            $domainAddResponseData = json_decode($domainAddResponseRaw, true);
+
+            if (!empty($domainAddResponseData['messages']['success'])
+                && in_array(
+                    sprintf(
+                        "Domain '%s' added",
+                        function_exists('idn_to_utf8') ? idn_to_utf8($domain) : $domain
+                    ),
+                    $domainAddResponseData['messages']['success']
+                )) {
+                // The domain has been added successfully
+                $result = true;
+            } elseif (!empty($domainAddResponseData['messages']['error'])
+                && in_array("Domain already exists.", $domainAddResponseData['messages']['error'])) {
+                // The domain laready exists in the spamfilter
+                // Check it's owner. We cannot just use the "domain/getowner" call here as otherwise
+                // if a domain belongs to one of sub-admins of current admin the check would fail
+                $domainGetproductsResponse = $this->get("/api/domain/getproducts/domain/$domain/format/json");
+                $domainGetproductsResponseRaw = $domainGetproductsResponse->send()->getBody(true);
+                $rawResponses .= $domainGetproductsResponseRaw;
+                $domainGetproductsResponseData = json_decode($domainGetproductsResponseRaw, true);
+                if (empty($domainGetproductsResponseData['messages']['error'])
+                    || ! is_array($domainGetproductsResponseData['messages']['error'])
+                    || ! in_array(
+                        sprintf(
+                            "You are not allowed to manage the domain '%s'",
+                            function_exists('idn_to_utf8') ? idn_to_utf8($domain) : $domain
+                        ),
+                        $domainGetproductsResponseData['messages']['error']
+                    )) {
+                    $result = true;
+                }
+            }
         } catch (Exception $e) {
-            $response = "Error: " . $e->getMessage() . " | Code: " . $e->getCode();
-            $this->report->add($response, Report::ERROR);
-            $result = false;
+            $this->report->add("Error: " . $e->getMessage() . " | Code: " . $e->getCode(), Report::ERROR);
         }
 
-        $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
+        $this->logger->debug(__METHOD__ . ": Result: " . var_export($result, true)
+            . " Responses: " . var_export($rawResponses, true));
         
         return $result;
     }
