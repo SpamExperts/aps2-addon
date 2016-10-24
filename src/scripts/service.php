@@ -4,7 +4,7 @@ require_once "aps/2/runtime.php";
 
 /**
  * Class service
- * @type("http://aps.spamexperts.com/app/service/1.1")
+ * @type("http://aps.spamexperts.com/app/service/1.2")
  * @implements("http://aps-standard.org/types/core/application/1.0")
  */
 class service extends \APS\ResourceBase
