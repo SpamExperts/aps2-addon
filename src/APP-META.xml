@@ -67,6 +67,9 @@
             <version version="2.0" release="12">
                 <entry>Resolved issue when retrieving context resources.</entry>
             </version>
+            <version version="2.0" release="14">
+                <entry>Implemented the possibility to avoid all resource counters update hourly, flooding the API.</entry>
+            </version>
         </changelog>
 
         <categories>

@@ -285,44 +285,58 @@ class context extends \APS\ResourceBase
 
     public function retrieve()
     {
-        $this->logger->debug(__FUNCTION__ . ": start");
+        $this->logger->debug(__METHOD__ . ": start");
 
-        $this->logger->debug(__FUNCTION__ . ": Updating counters");
+        $currentDow = date('D');
+        $currentHour = date('G');
+        if (!empty($this->service->usageUpdateDayOfWeek)
+            && ($this->service->usageUpdateDayOfWeek != $currentDow)) {
+            $this->logger->debug(
+                __METHOD__ . ": Skip updating counters on $currentDow as it's set to only update on {$this->service->usageUpdateDayOfWeek}"
+            );
+        } elseif (!empty($this->service->usageUpdateHour)
+            && ($this->service->usageUpdateHour != $currentHour)) {
+            $this->logger->debug(
+                __METHOD__ . ": Skip updating counters at $currentHour as it's set to only update at {$this->service->usageUpdateHour}"
+            );
+        } else {
+            $this->logger->debug(__METHOD__ . ": Updating counters");
 
-        $API = $this->API();
+            $API = $this->API();
 
-        ## Let's make an array to check for used counters and update them
-        $counters = array(
-            /* Product availability counters */
-            "incoming"          => "getIncoming",
-            "outgoing"          => "getOutgoing",
-            "archiving"         => "getArchiving",
-            "private_label"     => "getPrivateLabel",
+            ## Let's make an array to check for used counters and update them
+            $counters = array(
+                /* Product availability counters */
+                "incoming" => "getIncoming",
+                "outgoing" => "getOutgoing",
+                "archiving" => "getArchiving",
+                "private_label" => "getPrivateLabel",
 
-            /* Domain product usage counters */
-            "incoming_domains"  => "getIncomingDomains",
-            "outgoing_domains"  => "getOutgoingDomains",
-            "archiving_domains" => "getArchivingDomains",
+                /* Domain product usage counters */
+                "incoming_domains" => "getIncomingDomains",
+                "outgoing_domains" => "getOutgoingDomains",
+                "archiving_domains" => "getArchivingDomains",
 
-            /* User counters */
-            "incoming_users"    => "getIncomingUsers",
-            "outgoing_users"    => "getOutgoingUsers",
-        );
+                /* User counters */
+                "incoming_users" => "getIncomingUsers",
+                "outgoing_users" => "getOutgoingUsers",
+            );
 
-        foreach ($counters as $counter => $APICall) {
-            if (isset($this->{$counter}->limit)) {
-                $this->{$counter}->usage = (int)$API->{$APICall}($this->username);
+            foreach ($counters as $counter => $APICall) {
+                if (isset($this->{$counter}->limit)) {
+                    $this->{$counter}->usage = (int)$API->{$APICall}($this->username);
+                }
             }
+
+            /* TBD */
+            //$this->incoming_bandwidth->usage = $API->getIncomingBandwidth();
+            //$this->outgoing_bandwidth->usage = $API->getOutgoingBandwidth();
+            //$this->archiving_accounts->usage = $API->getArchivingAccounts();
+            //$this->archiving_space->usage    = $API->getArchivingSpace();
+            //$this->archiving_period->usage   = $API->getArchivingPeriod();
         }
 
-        /* TBD */
-        //$this->incoming_bandwidth->usage = $API->getIncomingBandwidth();
-        //$this->outgoing_bandwidth->usage = $API->getOutgoingBandwidth();
-        //$this->archiving_accounts->usage = $API->getArchivingAccounts();
-        //$this->archiving_space->usage    = $API->getArchivingSpace();
-        //$this->archiving_period->usage   = $API->getArchivingPeriod();
-
-        $this->logger->debug(__FUNCTION__ . ": stop");
+        $this->logger->debug(__METHOD__ . ": stop");
     }
 
     public function configure($context = null /** @var $context context */)
