@@ -11,7 +11,7 @@ class context extends \APS\ResourceBase
 {
     ## Strong link with the service (global settings)
     /**
-     * @link("http://aps.spamexperts.com/app/service/1.2")
+     * @link("http://aps.spamexperts.com/app/service/1.3")
      * @required
      */
     public $service;
