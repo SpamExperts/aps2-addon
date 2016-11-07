@@ -30,6 +30,12 @@ class context extends \APS\ResourceBase
      */
     public $account;
 
+    ## Link with the admin user (information for setting up the SE account)
+    /**
+     * @link("http://parallels.com/aps/types/pa/admin-user/1.0")
+     */
+    public $admin;
+
     ## Link to a collection of SE domain resources
     /**
      * @link("http://aps.spamexperts.com/app/domain/1.0[]")
@@ -246,11 +252,13 @@ class context extends \APS\ResourceBase
 
         $this->logger->info(__FUNCTION__ . ": Provisioning context");
 
-        $adminsFound = $this->APSC()->getResources('implementing(http://parallels.com/aps/types/pa/admin-user/1.0)');
-        if ($adminsFound[0]) {
-            $this->username = $adminsFound[0]->login . '_' . $this->subscription->subscriptionId;
+        if (empty($this->username)) {
+            $admin = reset(
+                $this->APSC()->getResources('implementing(http://parallels.com/aps/types/pa/admin-user/1.0)')
+            );
+            $this->username = $admin->login . '_' . $this->subscription->subscriptionId;
             $this->password = md5($this->aps->id);
-            $this->adminEmail = $adminsFound[0]->email;
+            $this->adminEmail = $admin->email;
         }
 
         $this->mx = $this->getServiceMXRecords();
@@ -390,7 +398,7 @@ class context extends \APS\ResourceBase
         /**
          * A domain should be auto-provisioned in 2 cases:
          * 1 - If a subscription what adds the domain sends the event (we compare subscription IDs to check that)
-         * 2 - If the most recent subscription sends the event - it's teh case for the most fist domain
+         * 2 - If the most recent subscription sends the event - it's the case for the most fist domain
          *
          * Here the 1st scenario is being checked
          */

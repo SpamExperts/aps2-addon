@@ -157,13 +157,7 @@ class service extends \APS\ResourceBase
             throw new Exception("The minimum supported version of the APS Runtime Library is v$MIN_APS_VERSION for POA 6.0 and up; you have version v$APS_VERSION. Please update your environment accordingly and try to reinstall the instance.");
         }
 
-        /**
-         * Subscribe to the "context available" event to auto-protect resources
-         * @see https://trac.spamexperts.com/ticket/28504
-         */
-        $onContextAvailable = new \APS\EventSubscription(\APS\EventSubscription::Available, "onContextAvailable");
-        $onContextAvailable->source = (object) array('type' => "http://aps.spamexperts.com/app/context/2.0");
-        $this->APSC()->subscribe($this, $onContextAvailable);
+        $this->onContextAvailabeSubscribe();
 
         $this->logger->info(__FUNCTION__ . ": stop");
     }
@@ -269,6 +263,10 @@ class service extends \APS\ResourceBase
                             $contextObject = json_decode($contextJson, false);
                             if ($contextObject) {
                                 $contextObject->aps->type = "http://aps.spamexperts.com/app/context/2.0";
+
+                                $admin = $this->APSC()->getResource($contextObject->admin->aps->id);
+                                $adminEmail = $admin->email;
+
                                 unset($contextObject->admin);
 
                                 $io->sendRequest(
@@ -276,6 +274,10 @@ class service extends \APS\ResourceBase
                                     "aps/2/resources/{$ctx->aps->id}",
                                     json_encode($contextObject)
                                 );
+
+                                $context = $this->APSC()->getResource($ctx->aps->id);
+                                $context->adminEmail = $adminEmail;
+                                $this->APSC()->updateResource($context);
                             } else {
                                 $this->logger->info(
                                     __METHOD__
@@ -289,6 +291,8 @@ class service extends \APS\ResourceBase
 
                     $start += 1000;
                 }
+
+                $this->onContextAvailabeSubscribe();
 
                 break;
         }
@@ -313,6 +317,17 @@ class service extends \APS\ResourceBase
         }
 
         $this->logger->info(__METHOD__ . ": stop");
+    }
+
+    private function onContextAvailabeSubscribe()
+    {
+        /**
+         * Subscribe to the "context available" event to auto-protect resources
+         * @see https://trac.spamexperts.com/ticket/28504
+         */
+        $onContextAvailable = new \APS\EventSubscription(\APS\EventSubscription::Available, "onContextAvailable");
+        $onContextAvailable->source = (object) array('type' => "http://aps.spamexperts.com/app/context/2.0");
+        $this->APSC()->subscribe($this, $onContextAvailable);
     }
 
     private function APSC()
