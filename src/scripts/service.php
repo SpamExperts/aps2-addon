@@ -4,7 +4,7 @@ require_once "aps/2/runtime.php";
 
 /**
  * Class service
- * @type("http://aps.spamexperts.com/app/service/1.2")
+ * @type("http://aps.spamexperts.com/app/service/1.3")
  * @implements("http://aps-standard.org/types/core/application/1.0")
  */
 class service extends \APS\ResourceBase
@@ -12,7 +12,7 @@ class service extends \APS\ResourceBase
     ## Link with a collection of contexts
 
     /**
-     * @link("http://aps.spamexperts.com/app/context/1.1[]")
+     * @link("http://aps.spamexperts.com/app/context/2.0[]")
      */
     public $contexts;
 
@@ -157,13 +157,7 @@ class service extends \APS\ResourceBase
             throw new Exception("The minimum supported version of the APS Runtime Library is v$MIN_APS_VERSION for POA 6.0 and up; you have version v$APS_VERSION. Please update your environment accordingly and try to reinstall the instance.");
         }
 
-        /**
-         * Subscribe to the "context available" event to auto-protect resources
-         * @see https://trac.spamexperts.com/ticket/28504
-         */
-        $onContextAvailable = new \APS\EventSubscription(\APS\EventSubscription::Available, "onContextAvailable");
-        $onContextAvailable->source = (object) array('type' => "http://aps.spamexperts.com/app/context/1.1");
-        $this->APSC()->subscribe($this, $onContextAvailable);
+        $this->onContextAvailabeSubscribe();
 
         $this->logger->info(__FUNCTION__ . ": stop");
     }
@@ -188,10 +182,22 @@ class service extends \APS\ResourceBase
 
         switch($version) {
             case "2.0-3":
-                $this->contextUpgrade("1.1");
-                break;
             case "2.0-4":
                 $this->contextUpgrade("1.1");
+
+                break;
+            case "2.0-5":
+            case "2.0-6":
+            case "2.0-7":
+            case "2.0-8":
+            case "2.0-9":
+            case "2.0-10":
+            case "2.0-11":
+            case "2.0-12":
+            case "2.0-13":
+            case "2.0-14":
+                $this->contextUpgrade("2.0");
+
                 break;
         }
 
@@ -234,6 +240,60 @@ class service extends \APS\ResourceBase
                     $context->mx = $mx;
                     $this->APSC()->updateResource($context);
                 }
+
+                break;
+
+            case "2.0":
+                $this->logger->info(__METHOD__ . ": Upgrading contexts from 1.1 to 2.0");
+
+                $io = $this->APSC()->getIo();
+                $start = 0;
+                while (true) {
+                    $contextsCollectionJson = $io->sendRequest(
+                        \APS\Proto::GET,
+                        "aps/2/resources/?implementing(http://aps.spamexperts.com/app/context/1.1),limit($start,1000)"
+                    );
+                    $contextsCollection = json_decode($contextsCollectionJson);
+                    if (!empty($contextsCollection) && is_array($contextsCollection)) {
+                        foreach ($contextsCollection as $ctx) {
+                            $contextJson = $io->sendRequest(
+                                \APS\Proto::GET,
+                                "aps/2/resources/{$ctx->aps->id}"
+                            );
+                            $contextObject = json_decode($contextJson, false);
+                            if ($contextObject) {
+                                $contextObject->aps->type = "http://aps.spamexperts.com/app/context/2.0";
+
+                                $admin = $this->APSC()->getResource($contextObject->admin->aps->id);
+                                $adminEmail = $admin->email;
+
+                                unset($contextObject->admin);
+
+                                $io->sendRequest(
+                                    \APS\Proto::PUT,
+                                    "aps/2/resources/{$ctx->aps->id}",
+                                    json_encode($contextObject)
+                                );
+
+                                $context = $this->APSC()->getResource($ctx->aps->id);
+                                $context->adminEmail = $adminEmail;
+                                $this->APSC()->updateResource($context);
+                            } else {
+                                $this->logger->info(
+                                    __METHOD__
+                                        . ": Context {$ctx->aps->id} - either bad JSON or no admin relation detected"
+                                );
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+
+                    $start += 1000;
+                }
+
+                $this->onContextAvailabeSubscribe();
+
                 break;
         }
     }
@@ -257,6 +317,17 @@ class service extends \APS\ResourceBase
         }
 
         $this->logger->info(__METHOD__ . ": stop");
+    }
+
+    private function onContextAvailabeSubscribe()
+    {
+        /**
+         * Subscribe to the "context available" event to auto-protect resources
+         * @see https://trac.spamexperts.com/ticket/28504
+         */
+        $onContextAvailable = new \APS\EventSubscription(\APS\EventSubscription::Available, "onContextAvailable");
+        $onContextAvailable->source = (object) array('type' => "http://aps.spamexperts.com/app/context/2.0");
+        $this->APSC()->subscribe($this, $onContextAvailable);
     }
 
     private function APSC()

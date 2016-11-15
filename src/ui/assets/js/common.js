@@ -3,7 +3,7 @@ define([  "aps/Message", "aps/ResourceStore", "aps/xhr", "dojo/when", "dijit/reg
         var common = {
             page: "apsPageContainer",
             types: {
-                context: "http://aps.spamexperts.com/app/context/1.1",
+                context: "http://aps.spamexperts.com/app/context/2.0",
                 domain:  "http://aps.spamexperts.com/app/domain/1.0",
                 email:   "http://aps.spamexperts.com/app/email/1.0"
             },

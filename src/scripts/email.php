@@ -11,7 +11,7 @@ class email extends \APS\ResourceBase
 {
     ## Strong link with the context
     /**
-     * @link("http://aps.spamexperts.com/app/context/1.1")
+     * @link("http://aps.spamexperts.com/app/context/2.0")
      * @required
      * 
      * @var context

@@ -4,14 +4,14 @@ require_once "aps/2/runtime.php";
 
 /**
  * Class context
- * @type("http://aps.spamexperts.com/app/context/1.1")
+ * @type("http://aps.spamexperts.com/app/context/2.0")
  * @implements("http://aps-standard.org/types/core/resource/1.0")
  */
 class context extends \APS\ResourceBase
 {
     ## Strong link with the service (global settings)
     /**
-     * @link("http://aps.spamexperts.com/app/service/1.2")
+     * @link("http://aps.spamexperts.com/app/service/1.3")
      * @required
      */
     public $service;
@@ -30,10 +30,9 @@ class context extends \APS\ResourceBase
      */
     public $account;
 
-    ## Strong link with the admin user (information for setting up the SE account)
+    ## Link with the admin user (information for setting up the SE account)
     /**
      * @link("http://parallels.com/aps/types/pa/admin-user/1.0")
-     * @required
      */
     public $admin;
 
@@ -217,6 +216,13 @@ class context extends \APS\ResourceBase
     public $password;
 
     /**
+     * @type(string)
+     * @title("Admin Email")
+     * @description("The SE admin email address")
+     */
+    public $adminEmail;
+
+    /**
      * @type(string[])
      * @title("MX records")
      * @description("The current MX record array")
@@ -246,9 +252,16 @@ class context extends \APS\ResourceBase
 
         $this->logger->info(__FUNCTION__ . ": Provisioning context");
 
-        $this->username = $this->admin->login . '_' . $this->subscription->subscriptionId;
-        $this->password = md5($this->aps->id);
-        $this->mx       = $this->getServiceMXRecords();
+        if (empty($this->username)) {
+            $admin = reset(
+                $this->APSC()->getResources('implementing(http://parallels.com/aps/types/pa/admin-user/1.0)')
+            );
+            $this->username = $admin->login . '_' . $this->subscription->subscriptionId;
+            $this->password = md5($this->aps->id);
+            $this->adminEmail = $admin->email;
+        }
+
+        $this->mx = $this->getServiceMXRecords();
 
         ## Create a new reseller container for the account
         $this->logger->info(__FUNCTION__ . ": Creating new SE account");
@@ -385,7 +398,7 @@ class context extends \APS\ResourceBase
         /**
          * A domain should be auto-provisioned in 2 cases:
          * 1 - If a subscription what adds the domain sends the event (we compare subscription IDs to check that)
-         * 2 - If the most recent subscription sends the event - it's teh case for the most fist domain
+         * 2 - If the most recent subscription sends the event - it's the case for the most fist domain
          *
          * Here the 1st scenario is being checked
          */
@@ -476,7 +489,7 @@ class context extends \APS\ResourceBase
 
         $this->logger->info(__FUNCTION__ . ": Updating reseller ($this->username : domainLimit => $domainLimit)");
 
-        $this->API()->updateReseller($this->username, $this->password, $this->admin->email, $domainLimit);
+        $this->API()->updateReseller($this->username, $this->password, $this->adminEmail, $domainLimit);
 
         $this->logger->info(__FUNCTION__ . ": stop");
     }
@@ -620,7 +633,7 @@ class context extends \APS\ResourceBase
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
-        $this->API()->updateReseller($this->username, $this->password, $this->admin->email);
+        $this->API()->updateReseller($this->username, $this->password, $this->adminEmail);
 
         $this->logger->info(__FUNCTION__ . ": stop");
     }
@@ -664,7 +677,6 @@ class context extends \APS\ResourceBase
 
 
     ### Helper functions
-
 
     ## Resources
 
@@ -920,7 +932,7 @@ class context extends \APS\ResourceBase
         $this->logger->info(__FUNCTION__ . ": Creating SE account");
         $domainLimit = $this->getLimit("http://aps.spamexperts.com/app/domain/1.0");
         $domainLimit = isset($domainLimit) ? $domainLimit : 0;
-        $result = $this->API()->addReseller($this->username, $this->password, $this->admin->email, $domainLimit) &&
+        $result = $this->API()->addReseller($this->username, $this->password, $this->adminEmail, $domainLimit) &&
                   $this->API()->setResellerProducts($this->username, $products);
 
         $this->logger->info(__FUNCTION__ . ": stop");

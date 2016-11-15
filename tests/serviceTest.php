@@ -105,10 +105,11 @@ class serviceTest extends PHPUnit_Framework_TestCase
         $context    = $this->getMockBuilder('context')->disableOriginalConstructor()->getMock();
         $API        = $this->getMockBuilder('APIClient')->disableOriginalConstructor()->getMock();
 
-        $context->admin = $context->aps = new stdClass();
+        $context->admin = new stdClass;
+        $context->aps = new stdClass();
 
         $context->admin->login = "reseller";
-        $context->admin->email = "email@domain.com";
+        $context->admin->email = "email@domain.test";
         $context->aps->id      = "id";
 
         $products = array();
