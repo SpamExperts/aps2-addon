@@ -332,7 +332,20 @@ class context extends \APS\ResourceBase
 
             foreach ($counters as $counter => $APICall) {
                 if (isset($this->{$counter}->limit)) {
-                    $this->{$counter}->usage = (int)$API->{$APICall}($this->username);
+
+                    /**
+                     * Product availability actual usage should always be zero
+                     * as there is a bunch of another, product-specific countrs available
+                     * (like incoming_domains, outgoing_users, archiving_accounts, etc).
+                     * Limiting on actual product availability can cause issues
+                     *
+                     * @see https://trac.spamexperts.com/ticket/30271
+                     */
+                    if (in_array($counter, array('getIncoming', 'getOutgoing', 'getArchiving'))) {
+                        $this->{$counter}->usage = 0;
+                    } else {
+                        $this->{$counter}->usage = (int)$API->{$APICall}($this->username);
+                    }
                 }
             }
 
