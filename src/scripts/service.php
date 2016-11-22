@@ -196,6 +196,7 @@ class service extends \APS\ResourceBase
             case "2.0-12":
             case "2.0-13":
             case "2.0-14":
+            case "2.0-15":
                 $this->contextUpgrade("2.0");
 
                 break;
