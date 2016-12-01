@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/SpamExperts/aps2-addon/badges/gpa.svg)](https://codeclimate.com/github/SpamExperts/aps2-addon) [![Issue Count](https://codeclimate.com/github/SpamExperts/aps2-addon/badges/issue_count.svg)](https://codeclimate.com/github/SpamExperts/aps2-addon)
+
 # SpamExperts
 
 SpamExperts application for Odin Operations Automation 6.0, built using the APS framework.
@@ -31,4 +33,3 @@ Here is a more detailed explanation of the options you can use for the build:
 ## Stable Release
 
 You can find the latest stable release in the [App Catalog](https://dev.apsstandard.org/apps/).
-
