@@ -2,7 +2,7 @@
     <id>http://aps.spamexperts.com/app</id>
     <name>SpamExperts</name>
     <version>2.0</version>
-    <release>15</release>
+    <release>16</release>
     <homepage>http://www.spamexperts.com/</homepage>
 
     <vendor>
@@ -73,6 +73,9 @@
             <version version="2.0" release="15">
                 <entry>Deleting one of account admins does not not cause unprotection on the bound subscription anymore.</entry>
                 <entry>Fixed issue with product availability flag - now it is possible to disable a product for provisioning even if it's enabled for underlying admin account.</entry>
+            </version>
+            <version version="2.0" release="16">
+                <entry>Fixed '500 Internal Server Error when provisioning a context resource' (https://github.com/SpamExperts/aps2-addon/issues/6)</entry>
             </version>
         </changelog>
 
