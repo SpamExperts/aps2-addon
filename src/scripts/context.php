@@ -253,9 +253,8 @@ class context extends \APS\ResourceBase
         $this->logger->info(__FUNCTION__ . ": Provisioning context");
 
         if (empty($this->username)) {
-            $admin = reset(
-                $this->APSC()->getResources('implementing(http://parallels.com/aps/types/pa/admin-user/1.0)')
-            );
+            $admins = $this->APSC()->getResources('implementing(http://parallels.com/aps/types/pa/admin-user/1.0)');
+            $admin = reset($admins);
             $this->username = $admin->login . '_' . $this->subscription->subscriptionId;
             $this->password = md5($this->aps->id);
             $this->adminEmail = $admin->email;
