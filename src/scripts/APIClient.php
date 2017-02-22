@@ -650,8 +650,13 @@ class APIClient extends Guzzle\Http\Client
         try {
             $response = $this->get("/api/reseller/list/username/$username/no_domains/1/");
             $response = $response->send()->getBody(true);
-            $result = stripos($response, 'domainslimit') !== false ? (array)array_pop(json_decode($response)) : null;
-            $result = array_pop($result);
+            if (stripos($response, 'domainslimit') !== false) {
+                $decodedResponse = json_decode($response);
+                $result = (array) array_pop($decodedResponse);
+            } else {
+                $result = null;
+            }
+            $result = is_array($result) ? array_pop($result) : null;
         } catch (Exception $e) {
             $response = "Error: " . $e->getMessage() . " | Code: " . $e->getCode();
             $this->report->add($response, Report::ERROR);
