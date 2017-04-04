@@ -492,18 +492,38 @@ class context extends \APS\ResourceBase
      */
     public function onSubscriptionLimitChanged($event)
     {
-        $this->logger->info(__FUNCTION__ . ": start");
+        $this->logger->info(__METHOD__ . ": start");
 
-        $this->logger->info(__FUNCTION__ . ": A subscription limit has changed");
+        $this->logger->info(__METHOD__ . ": A subscription limit has changed");
 
         $domainLimit = $this->getLimit("http://aps.spamexperts.com/app/domain/1.0");
         $domainLimit = isset($domainLimit) ? $domainLimit : 0;
 
-        $this->logger->info(__FUNCTION__ . ": Updating reseller ($this->username : domainLimit => $domainLimit)");
+        $this->logger->info(__METHOD__ . ": Updating reseller ($this->username : domainLimit => $domainLimit)");
 
         $this->API()->updateReseller($this->username, $this->password, $this->adminEmail, $domainLimit);
 
-        $this->logger->info(__FUNCTION__ . ": stop");
+        /**
+         * Update available products for the subscription's admin
+         * @see https://github.com/SpamExperts/aps2-addon/issues/14
+         */
+        $products = array();
+        foreach (array('incoming', 'outgoing', 'archiving') as $product) {
+            $products[$product] = isset($this->{$product}->limit) && 0 < $this->{$product}->limit ? 1 : 0;
+        }
+
+        $PL = array( 1 => 'standard', 2 => 'premium' );
+        $products['private_label'] =
+            isset($this->private_label->limit, $PL[$this->private_label->limit])
+                ? $PL[$this->private_label->limit]
+                : 'none';
+
+        $this->logger->info(__METHOD__ . ": Updating SE account's products to: "
+            . print_r($products, true));
+
+        $this->API()->setResellerProducts($this->username, $products);
+
+        $this->logger->info(__METHOD__ . ": stop");
     }
 
 
