@@ -61,7 +61,8 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                         return SEData;
                     },
                     store = new ResourceStore({
-                        target: "/aps/2/resources/" + account.aps.id + target + entriesFilter()
+                        target: "/aps/2/resources/" + account.aps.id + target + entriesFilter(),
+                        idProperty: "aps.id"
                     }),
                     SEData = getSEData(resources),
                     login = aps.context.vars.context['cp_' + type],
