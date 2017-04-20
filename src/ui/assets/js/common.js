@@ -1,5 +1,12 @@
-define([  "aps/Message", "aps/ResourceStore", "aps/xhr", "dojo/when", "dijit/registry" ],
-    function ( Message,       ResourceStore,       xhr,        when,         registry ) {
+define([  "aps/Message", "aps/ResourceStore", "aps/xhr", "dojo/when", "dijit/registry", "dojo/Deferred" ],
+    function (
+        Message,
+        ResourceStore,
+        xhr,
+        when,
+        registry,
+        Deferred
+    ) {
         var common = {
             page: "apsPageContainer",
             types: {
@@ -13,6 +20,33 @@ define([  "aps/Message", "aps/ResourceStore", "aps/xhr", "dojo/when", "dijit/reg
             },
             SEA: function(action, options) {
                 return xhr("/aps/2/resources/" + aps.context.vars.context.aps.id + "/" + action, typeof options !== 'undefined' ? options : {});
+            },
+            fetchApsResources: function (path) {
+                var fetcher = new Deferred(),
+                    page = 1,
+                    allResources = [],
+                    checker = function (p) {
+                        var pageSize = 1000,
+                            limitClause = '?limit(' + (pageSize * (p - 1)) + ',' + pageSize + ')',
+                            errorHandler = function () {
+                                fetcher.reject("An error occured");
+                                common.requestError();
+                            };
+
+                        common.SEA(path + limitClause).then(function (resources) {
+                            allResources = allResources.concat(resources);
+
+                            if (resources.length === pageSize) {
+                                checker(++page);
+                            } else {
+                                fetcher.resolve(allResources);
+                            }
+                        }).otherwise(errorHandler);
+                    };
+
+                checker(page);
+
+                return fetcher.promise;
             },
             messageCounter: {
                 warning:  0,

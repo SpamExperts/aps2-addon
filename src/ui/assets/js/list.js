@@ -31,7 +31,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
             }
 
             common.SEA('account').then(function (account) {
-                common.SEA(type + 's').then(function (resources) {
+                common.fetchApsResources(type + 's').then(function (resources) {
                     xhr("/aps/2/resources?implementing(" + common.types.domain +
                         "),not(linkedWith(" + aps.context.vars.context.aps.id +
                         "))").then(function (excludedResources) {
@@ -173,7 +173,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                                                         items = grid.get("selectionArray");
 
                                                     common.SEA(type + 'Check', { data: JSON.stringify(items), method: "PUT" }).then(function() {
-                                                        common.SEA(type + 's').then(function(resources) {
+                                                        common.fetchApsResources(type + 's').then(function(resources) {
                                                             SEData = getSEData(resources);
                                                             registry.byId("grid").refresh();
                                                             common.report();
@@ -198,7 +198,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                                                         items = grid.get("selectionArray");
 
                                                     common.SEA(type + 'Protect', { data: JSON.stringify(items), method: "PUT" }).then(function() {
-                                                        common.SEA(type + 's').then(function(resources) {
+                                                        common.fetchApsResources(type + 's').then(function(resources) {
                                                             SEData = getSEData(resources);
                                                             registry.byId("grid").refresh();
                                                             common.report();
@@ -223,7 +223,7 @@ define([  "aps/Message", "aps/Button", "aps/ResourceStore", "aps/Memory", "aps/x
                                                         items = grid.get("selectionArray");
 
                                                     common.SEA(type + 'Unprotect', { data: JSON.stringify(items), method: "PUT" }).then(function() {
-                                                        common.SEA(type + 's').then(function(resources) {
+                                                        common.fetchApsResources(type + 's').then(function(resources) {
                                                             SEData = getSEData(resources);
                                                             registry.byId("grid").refresh();
                                                             common.report();
