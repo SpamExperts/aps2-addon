@@ -509,7 +509,7 @@ class context extends \APS\ResourceBase
          */
         $products = array();
         foreach (array('incoming', 'outgoing', 'archiving') as $product) {
-            $products[$product] = isset($this->{$product}->limit) && 0 < $this->{$product}->limit ? 1 : 0;
+            $products[$product] = isset($this->{$product}->limit) ? (0 != $this->{$product}->limit ? 1 : 0) : 1;
         }
 
         $PL = array( 1 => 'standard', 2 => 'premium' );
