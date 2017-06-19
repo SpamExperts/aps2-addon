@@ -11,7 +11,7 @@ class context extends \APS\ResourceBase
 {
     ## Strong link with the service (global settings)
     /**
-     * @link("http://aps.spamexperts.com/app/service/1.3")
+     * @link("http://aps.spamexperts.com/app/service/1.4")
      * @required
      */
     public $service;
@@ -415,6 +415,7 @@ class context extends \APS\ResourceBase
          * Here the 1st scenario is being checked
          */
         $subscriptionIdsMatch = false;
+        $ignoreRemoteDomains = !! $this->service->ignoreRemoteDomains;
         try {
             $domainHosting = $domain->hosting;
             if (isset($domainHosting) && isset($domainHosting->aps->id)) {
@@ -426,18 +427,37 @@ class context extends \APS\ResourceBase
             $this->logger->info(__METHOD__ . ": " . $e->getMessage());
         }
 
-        $autoProtectionEnabled = ! $this->domainAutoprotectionDisabled();
+        if ($ignoreRemoteDomains && empty($domainHosting)) {
+            $this->logger->info(__METHOD__ . ": Ignoring '{$domain->name}' as it does not have a '/hosting' reference "
+                . "but it is required according to current settings (Ignore 'remote' domains is enabled)");
+        } else {
+            $autoProtectionEnabled = !$this->domainAutoprotectionDisabled();
 
-        $this->logger->info(__METHOD__ . ": auto_protect_domain is "
-            . ($autoProtectionEnabled ? 'enabled' : 'disabled') . "; "
-            . "subscription does " . ($subscriptionIdsMatch ? '' : 'NOT ') . "match.");
+            $this->logger->info(__METHOD__ . ": auto_protect_domain is "
+                . ($autoProtectionEnabled ? 'enabled' : 'disabled') . "; "
+                . "subscription does " . ($subscriptionIdsMatch ? '' : 'NOT ') . "match.");
 
-        if ($autoProtectionEnabled && $subscriptionIdsMatch) {
+            if ($autoProtectionEnabled && $subscriptionIdsMatch) {
 
-            $this->logger->info(__METHOD__ . ": New domain: " . $domain->name);
+                /**
+                 * If we are protecting "local" domains only
+                 * the following requirements should be met:
+                 * - There should be a reference to the domain's subscription
+                 * - The subscription should have SE resources
+                 *
+                 * @see https://github.com/SpamExperts/aps2-addon/issues/25
+                 */
+                if ($ignoreRemoteDomains && ! $this->subscriptionHasSEReources($domainHosting->subscriptionId)) {
+                    $this->logger->info(__METHOD__ . ": Ignoring '{$domain->name}' as the subscription it belongs "
+                        . "does not have SE resources but it is required according to current settings "
+                        . "(Ignore 'remote' domains is enabled)");
+                } else {
+                    $this->logger->info(__METHOD__ . ": New domain: " . $domain->name);
 
-            $this->APSN = array('type' => 'domain', 'name' => 'name');
-            $this->updateResources(array($domain), true);
+                    $this->APSN = array('type' => 'domain', 'name' => 'name');
+                    $this->updateResources(array($domain), true);
+                }
+            }
         }
 
         $this->logger->info(__METHOD__ . ": stop");
@@ -1126,5 +1146,30 @@ class context extends \APS\ResourceBase
     private function APSC($resource = null)
     {
         return $this->APSC ?: $this->APSC = \APS\Request::getController()->impersonate($resource ?: $this);
+    }
+
+    /**
+     * Checks if a subscription with the given ID (not APS resource GUID but the numeric ID)
+     * has an SE context linked
+     *
+     * @param int $subscriptionId
+     *
+     * @return bool
+     */
+    private function subscriptionHasSEReources($subscriptionId)
+    {
+        $result = false;
+
+        $subscription = reset($this->APSC()->getResources(
+            "and(implementing(http://parallels.com/aps/types/pa/subscription/1.0),eq(subscriptionId,{$subscriptionId}))", "/aps/2/resources/"
+        ));
+
+        if ($subscription) {
+            $result = 0 < sizeof($this->APSC()->getResources(
+                    "implementing(http://aps.spamexperts.com/app/context/2.0),linkedWith({$subscription->aps->id})", "/aps/2/resources/"
+                ));
+        }
+
+        return $result;
     }
 }

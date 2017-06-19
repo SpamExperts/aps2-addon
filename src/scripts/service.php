@@ -4,7 +4,7 @@ require_once "aps/2/runtime.php";
 
 /**
  * Class service
- * @type("http://aps.spamexperts.com/app/service/1.3")
+ * @type("http://aps.spamexperts.com/app/service/1.4")
  * @implements("http://aps-standard.org/types/core/application/1.0")
  */
 class service extends \APS\ResourceBase
@@ -132,6 +132,15 @@ class service extends \APS\ResourceBase
      * @option("23", "23:00")
      */
     public $usageUpdateHour = '';
+
+    /**
+     * @type(boolean)
+     * @default(false)
+     * @title("Ignore 'remote' domains")
+     * @description("Enable this option to skip protection of domains which don't have local DNS hosting.")
+     * @required
+     */
+    public $ignoreRemoteDomains = false;
 
     const MIN_APS_VERSION = "2.1";
 
