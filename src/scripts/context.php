@@ -465,12 +465,12 @@ class context extends \APS\ResourceBase
 
     public function domainAutoprotectionDisabled()
     {
-        return isset($this->auto_protect_domain->limit) && '0' === $this->auto_protect_domain->limit;
+        return isset($this->auto_protect_domain->limit) && '0' === strval($this->auto_protect_domain->limit);
     }
 
     public function emailAutoprotectionDisabled()
     {
-        return isset($this->auto_protect_email->limit) && '0' === $this->auto_protect_email->limit;
+        return isset($this->auto_protect_email->limit) && '0' === strval($this->auto_protect_email->limit);
     }
 
     /**
