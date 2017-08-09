@@ -2,7 +2,7 @@
     <id>http://aps.spamexperts.com/app</id>
     <name>SpamExperts</name>
     <version>2.0</version>
-    <release>18</release>
+    <release>19</release>
     <homepage>http://www.spamexperts.com/</homepage>
 
     <vendor>
@@ -113,14 +113,14 @@
         </navigation>
 
         <navigation id="suwizard">
-            <view id="suwizard.new" label="New SE Email User">
+            <view id="suwizard_new" label="New SE Email User">
                 <var name="context" type-id="http://aps.spamexperts.com/app/context/2.0"/>
                 <plugs-to id="http://www.aps-standard.org/ui/service/suwizard.new"/>
             </view>
-            <view id="suwizard.overview" label="SE Overview">
+            <view id="suwizard_overview" label="SE Overview">
                 <plugs-to id="http://www.aps-standard.org/ui/service/suwizard.overview"/>
             </view>
-            <view id="suservice.view" label="Settings">
+            <view id="suservice_view" label="Settings">
                 <var name="context" type-id="http://aps.spamexperts.com/app/context/2.0"/>
                 <plugs-to id="http://www.aps-standard.org/ui/service/suservice.view"/>
             </view>
