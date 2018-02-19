@@ -340,7 +340,7 @@ class context extends \APS\ResourceBase
                      *
                      * @see https://trac.spamexperts.com/ticket/30271
                      */
-                    if (in_array($counter, array('getIncoming', 'getOutgoing', 'getArchiving'))) {
+                    if (in_array($counter, array('incoming', 'outgoing', 'archiving'))) {
                         $this->{$counter}->usage = 0;
                     } else {
                         $this->{$counter}->usage = (int)$API->{$APICall}($this->username);
