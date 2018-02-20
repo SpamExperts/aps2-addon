@@ -2,7 +2,7 @@
     <id>http://aps.spamexperts.com/app</id>
     <name>SpamExperts</name>
     <version>2.0</version>
-    <release>19</release>
+    <release>20</release>
     <homepage>http://www.spamexperts.com/</homepage>
 
     <vendor>
@@ -88,6 +88,9 @@
             <version version="2.0" release="19">
                 <entry>Fixed the APS provisioning issue: Incoming and Archiving active when they should not be active (https://github.com/SpamExperts/aps2-addon/issues/33)</entry>
                 <entry>Some resource IDs made compatible with APS linter expectations (https://github.com/SpamExperts/aps2-addon/issues/31)</entry>
+            </version>
+            <version version="2.0" release="20">
+                <entry>Application sets incorrect usage values in OSA every night (https://github.com/SpamExperts/aps2-addon/issues/38)</entry>
             </version>
         </changelog>
 

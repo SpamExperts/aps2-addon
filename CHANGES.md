@@ -1,3 +1,7 @@
+# 2.0-20
+
+* Application sets incorrect usage values in OSA every night (#38).
+
 # 2.0-19
 
 * Application compatibility with OSA v7.1.
