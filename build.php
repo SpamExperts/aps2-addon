@@ -48,7 +48,7 @@ if (isset($options['test'])) {
 
     $output = '';
     $return_var = 0;
-    exec(  __DIR__ . "/src/scripts/vendor/bin/phpunit " . __DIR__ . "/tests/APIClientTest.php", $output , $return_var);
+    exec(  __DIR__ . "/src/scripts/vendor/bin/phpunit -c " . __DIR__ . "/src/scripts/phpunit.xml", $output , $return_var);
 
     echo join("\n", $output) . "\n";
 

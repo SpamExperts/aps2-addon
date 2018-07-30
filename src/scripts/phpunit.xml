@@ -1,0 +1,36 @@
+<phpunit
+        backupGlobals="false"
+        colors="true"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+>
+    <testsuites>
+        <testsuite name="APS 2.0 resources">
+            <directory suffix=".php">../../tests/</directory>
+            <exclude>../../tests/spamexperts/config.php</exclude>
+            <exclude>../../tests/spamexperts/testAppInstance.php</exclude>
+            <exclude>../../tests/spamexperts/testSubscription.php</exclude>
+            <exclude>../../tests/contextTest.php</exclude>
+            <exclude>../../tests/domainTest.php</exclude>
+            <exclude>../../tests/serviceTest.php</exclude>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="false">
+            <directory suffix=".php">./</directory>
+            <exclude>
+                <directory suffix=".php">./vendor</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-text"
+             target="php://stdout"
+             lowUpperBound="35"
+             highLowerBound="80" />
+    </logging>
+
+</phpunit>
