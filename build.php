@@ -43,9 +43,9 @@ if (!file_exists("./composer.phar")) {
     exec("wget https://raw.githubusercontent.com/composer/getcomposer.org/f084c2e65e0bf3f3eac0f73107450afff5c2d666/web/installer -O - -q | php -- --quiet");
 }
 
-exec("php composer.phar install -d $app/scripts");
-
 if (isset($options['test'])) {
+    exec("php composer.phar install -d " . __DIR__ . "/src/scripts");
+
     $output = '';
     $return_var = 0;
     exec(  __DIR__ . "/src/scripts/vendor/bin/phpunit " . __DIR__ . "/tests/APIClientTest.php", $output , $return_var);
@@ -54,6 +54,8 @@ if (isset($options['test'])) {
 
     exit($return_var);
 }
+
+exec("php composer.phar install -d $app/scripts");
 
 if (!isset($options['dev'])) {
     exec("rm -rf \"$app/scripts/composer.json\" \"$app/scripts/composer.lock\" ");
