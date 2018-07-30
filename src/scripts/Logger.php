@@ -18,6 +18,6 @@ class Logger extends Monolog\Logger
         $level = defined("APS_DEVELOPMENT_MODE") && APS_DEVELOPMENT_MODE
             ? Monolog\Logger::DEBUG
             : Monolog\Logger::INFO;
-        $this->pushHandler(new Monolog\Handler\RotatingFileHandler("logs/app-log", 30 /* days */, $level));
+        $this->pushHandler(new Monolog\Handler\RotatingFileHandler(__DIR__ . "/logs/app-log", 30 /* days */, $level));
     }
 }
