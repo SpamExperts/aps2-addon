@@ -18,5 +18,8 @@
     },
     "autoload": {
         "files": ["APIClient.php", "Logger.php", "Report.php", "App.php"]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.5"
     }
 }

@@ -4,7 +4,7 @@ require_once "vendor/autoload.php";
 
 @session_start();
 
-class APIClientTest extends PHPUnit_Framework_TestCase
+class APIClientTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @test
@@ -23,8 +23,13 @@ class APIClientTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @depends constructor
+     * @depends      constructor
      * @dataProvider APICallCasesProvider
+     * @param $call
+     * @param $arguments
+     * @param $message
+     * @param $assertion
+     * @param $exception
      */
     public function APICall($call, $arguments, $message, $assertion, $exception)
     {
@@ -34,8 +39,8 @@ class APIClientTest extends PHPUnit_Framework_TestCase
     public function APICallCasesProvider()
     {
         return array(
-            array( "addDomain",           array("domain.com"),       "_Added_",          true,  false ),
-            array( "addDomain",           array("domain.com"),       "_Already_",        true,  false ),
+            array( "addDomain",           array("domain.com"),       "{\"messages\": {\"success\": [\"Domain 'domain.com' added\"]}}", true, false ),
+            array( "addDomain",           array("domain.com"),       "{\"messages\": {\"error\": [\"Domain already exists.\"]}}", true, false ),
             array( "addDomain",           array("domain.com"),       "",                 false, false ),
             array( "addDomain",           array("domain.com"),       "other",            false, false ),
             array( "addDomain",           array("domain.com"),       "",                 false, true  ),
@@ -63,7 +68,7 @@ class APIClientTest extends PHPUnit_Framework_TestCase
             array( "removeDomainUser",    array("domain.com"),       "other",            false, false ),
             array( "removeDomainUser",    array("domain.com"),       "",                 false, true  ),
 
-            array( "checkDomainUser",     array("domain.com"),       "_domain.com_",     true,  false ),
+            array( "checkDomainUser",     array("Domain.com"),       "{\"username\": \"domain.com\"}", true, false ),
             array( "checkDomainUser",     array("domain.com"),       "",                 false, false ),
             array( "checkDomainUser",     array("domain.com"),       "other",            false, false ),
             array( "checkDomainUser",     array("domain.com"),       "",                 false, true  ),
@@ -111,10 +116,17 @@ class APIClientTest extends PHPUnit_Framework_TestCase
     // Mock Guzzle's 'get' method with a custom response or raise an exception; get the rest of the client intact for testing
     private function clientMock($message, $exception)
     {
-        $response = $this->getMock('Guzzle\Http\Message\Response', array(), array(), '', false);
-        $response->method('getBody')->willReturn($message);
+        $response = $this->getMockBuilder('Guzzle\Http\Message\Response')
+            ->setMethods([ 'getBody' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $response->method('getBody')
+            ->willReturn($message);
 
-        $request = $this->getMock('Guzzle\Http\Message\Request', array(), array(), '', false);
+        $request = $this->getMockBuilder('Guzzle\Http\Message\Request')
+            ->setMethods([ 'send' ])
+            ->disableOriginalConstructor()
+            ->getMock();
         $request->method('send')->will($this->returnCallback(function () use ($response, $exception) {
             if (!$exception) {
                 return $response;
@@ -123,7 +135,10 @@ class APIClientTest extends PHPUnit_Framework_TestCase
             }
         }));
 
-        $client = $this->getMock('APIClient', array('get'), array($this->service()));
+        $client = $this->getMockBuilder('APIClient')
+            ->setMethods([ 'get' ])
+            ->setConstructorArgs([ $this->service() ])
+            ->getMock();
         $client->method('get')->willReturn($request);
 
         return $client;

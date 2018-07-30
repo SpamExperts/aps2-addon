@@ -8,6 +8,7 @@ $longopts  = array(
     "dir:",
     "package::",
     "dev",
+    "test",
 );
 
 $options = getopt($shortopts, $longopts);
@@ -18,6 +19,7 @@ if (isset($options['help'])) {
         "--dir     => Use a specific output directory name (default is 'spamexperts') Usage: --dir my_output_dir",
         "--package => Build an APS package; you can optionally specify a name (default is 'SpamExperts-2.0-X.app.zip') Usage: --package; --package='my_package.app.zip'",
         "--dev     => Development build (keeps some files; ignores --package) Usage: --dev",
+        "--test    => Executes standalone unit tests (not including POA integration tests). Usage: --test",
     );
     exit(implode("\n", $information) . "\n");
 }
@@ -37,14 +39,24 @@ if (file_exists($app)) {
 
 exec("cp -r src/ $app/");
 
-if (!file_exists("composer.phar")) {
-    exec("wget getcomposer.org/composer.phar");
+if (!file_exists("./composer.phar")) {
+    exec("wget https://raw.githubusercontent.com/composer/getcomposer.org/f084c2e65e0bf3f3eac0f73107450afff5c2d666/web/installer -O - -q | php -- --quiet");
 }
 
 exec("php composer.phar install -d $app/scripts");
 
+if (isset($options['test'])) {
+    $output = '';
+    $return_var = 0;
+    exec( "cd " . __DIR__ . "/src/scripts; vendor/bin/phpunit ./../../tests/APIClientTest.php", $output , $return_var);
+
+    echo join("\n", $output) . "\n";
+
+    exit($return_var);
+}
+
 if (!isset($options['dev'])) {
-    exec("rm -rf $app/scripts/composer.json; rm -rf $app/scripts/composer.lock;");
+    exec("rm -rf \"$app/scripts/composer.json\" \"$app/scripts/composer.lock\" ");
 
     if (isset($options['package'])) {
         $outputName = $options['package'] ? "-o {$options['package']}" : '';

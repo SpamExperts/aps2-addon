@@ -1,6 +1,6 @@
 <?php
 
-class serviceTest extends PHPUnit_Framework_TestCase
+class serviceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @test

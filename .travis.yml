@@ -11,4 +11,4 @@ before_script:
   # - composer install -d plib/library
 
 script:
-  # - php plib/library/vendor/bin/codecept run unit
+  - php build.php --test

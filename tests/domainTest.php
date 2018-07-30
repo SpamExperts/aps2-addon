@@ -1,8 +1,10 @@
 <?php
 
+require_once "vendor/autoload.php";
+
 @session_start();
 
-class domainTest extends PHPUnit_Framework_TestCase
+class domainTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @test
