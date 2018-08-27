@@ -1123,7 +1123,12 @@ class context extends \APS\ResourceBase
 
             $result = true;
         } catch (Exception $e) {
-            $this->report->add("Could not replace MX records for domain '{$domain->name}'. [$e]", Report::WARNING);
+            /** @see https://github.com/SpamExperts/aps2-addon/issues/42 */
+            if ($e instanceof \Rest\RestException && 'Plesk.ErrorHandling.dns.DuplicateDNSRecord' === $e->details->error) {
+                $this->report->add("Could not replace MX records for the domain '{$domain->name}'. It looks like the domain resource has some extra MX-record resources added by someone with higher permissions (most likely an admin) and this application can not manage these MX records in any way due to a lack of permissions. Please try to execute the following RQL query as admin - /aps/2/resources/{$domain->aps->id}/records?implementing(http://parallels.com/aps/types/pa/dns/record/mx/1.0) - to see if this indeed the case and, if yes, deleting the found resources followed by the Protect action should fix the domain state.", Report::WARNING);
+            } else {
+                $this->report->add("Could not replace MX records for domain '{$domain->name}'. [$e]", Report::WARNING);
+            }
         }
 
         $this->logger->info(__FUNCTION__ . ": stop");
