@@ -359,6 +359,11 @@ class context extends \APS\ResourceBase
         $this->logger->debug(__METHOD__ . ": stop");
     }
 
+    /**
+     * @param null $context
+     *
+     * @codeCoverageIgnore
+     */
     public function configure($context = null /** @var $context context */)
     {
         $this->logger->info(__FUNCTION__ . ": start");
@@ -400,6 +405,8 @@ class context extends \APS\ResourceBase
      * @verb(POST)
      * @path("/onDomainAvailable")
      * @param("http://aps-standard.org/types/core/resource/1.0#Notification",body)
+     *
+     * @throws Exception
      */
     public function onDomainAvailable($event)
     {
@@ -740,7 +747,7 @@ class context extends \APS\ResourceBase
      * @param bool $protect Whether to protect the resource or not
      * @return array
      */
-    private function updateResources($resources, $protect = false)
+    protected function updateResources($resources, $protect = false)
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
@@ -969,7 +976,7 @@ class context extends \APS\ResourceBase
     ## Reseller
 
 
-    private function createReseller()
+    protected function createReseller()
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
@@ -1024,7 +1031,7 @@ class context extends \APS\ResourceBase
         $mx = array();
 
         for ($i = 1; $i <= 4; $i++) {
-            if ($this->service->{"mx$i"}) {
+            if (isset($this->service->{"mx$i"})) {
                 $mx[] = $this->service->{"mx$i"} . ".";
             }
         }
@@ -1057,7 +1064,7 @@ class context extends \APS\ResourceBase
         return count($this->mx) == count($this->getPAMXRecords($domain, 'in'));
     }
 
-    private function revertMXRecords($domain) {
+    protected function revertMXRecords($domain) {
         $records = $this->getPAMXRecords($domain, 'in');
         foreach ($records as $record) {
             try {
@@ -1148,7 +1155,7 @@ class context extends \APS\ResourceBase
         return $this->API;
     }
 
-    private function APSC($resource = null)
+    protected function APSC($resource = null)
     {
         return $this->APSC ?: $this->APSC = \APS\Request::getController()->impersonate($resource ?: $this);
     }
@@ -1160,8 +1167,10 @@ class context extends \APS\ResourceBase
      * @param int $subscriptionId
      *
      * @return bool
+     *
+     * @throws Exception
      */
-    private function subscriptionHasSEReources($subscriptionId)
+    protected function subscriptionHasSEReources($subscriptionId)
     {
         $result = false;
 

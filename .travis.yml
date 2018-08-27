@@ -7,8 +7,9 @@ php:
   - 7.0
 
 before_script:
-  # Install Composer dependencies
-  # - composer install -d plib/library
+  # Install PHP runtime for APS 2
+  wget http://download.apsstandard.org/php.runtime/aps-php-runtime-7.4-113.zip
+  unzip aps-php-runtime-7.4-113.zip -d ./src/scripts/
 
 script:
   - php build.php --test

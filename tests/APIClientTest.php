@@ -80,6 +80,17 @@ class APIClientTest extends \PHPUnit\Framework\TestCase
             array( "addEmailUser",        array("email@domain.com"), "",                 false, true  ),
             array( "addEmailUser",        array("other"),            "",                 false, false ),
 
+            array( "removeEmailUser",     array("email@example.com"),       "_Deleted_",        true,  false ),
+            array( "removeEmailUser",     array("email@example.com"),       "_Unable_",         true,  false ),
+            array( "removeEmailUser",     array("email@example.com"),       "",                 false, false ),
+            array( "removeEmailUser",     array("email@example.com"),       "other",            false, false ),
+            array( "removeEmailUser",     array("email@example.com"),       "",                 false, true  ),
+
+            array( "checkEmailUser",      array("email@example.com"),       "{\"username\": \"email@example.com\"}", true, false ),
+            array( "checkEmailUser",      array("email@example.com"),       "",                 false, false ),
+            array( "checkEmailUser",      array("email@example.com"),       "other",            false, false ),
+            array( "checkEmailUser",      array("email@example.com"),       "",                 false, true  ),
+
             array( "addReseller",         array("u", "p", "e"),      "_Success_",        true,  false ),
             array( "addReseller",         array("u", "p", "e"),      "",                 false, false ),
             array( "addReseller",         array("u", "p", "e"),      "other",            false, false ),
@@ -98,6 +109,23 @@ class APIClientTest extends \PHPUnit\Framework\TestCase
             array( "getAuthTicket",       array("username"),         "ticket",        "ticket", false ),
             array( "getAuthTicket",       array("username"),         "",                 "",    false ),
             array( "getAuthTicket",       array("username"),         "",                 false, true  ),
+
+            array( "setDomainProducts",   array(
+                                              "example.com",
+                                              array(
+                                                  'incoming' => 1,
+                                                  'outgoing' => 1,
+                                                  'archiving' => 1
+                                              )
+                                          ),                         "",                 true,  false ),
+            array( "setDomainProducts",   array(
+                                              "example.com",
+                                              array(
+                                                  'incoming' => 1,
+                                                  'outgoing' => 1,
+                                                  'archiving' => 1
+                                              )
+                                          ),                         "_Error_",          false, true  ),
         );
     }
 
