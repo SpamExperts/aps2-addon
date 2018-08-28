@@ -90,7 +90,11 @@ class email extends \APS\ResourceBase
 
     ###
 
-
+    /**
+     * @return APIClient|null
+     *
+     * @codeCoverageIgnore
+     */
     public function API()
     {
         if (!$this->API) {
@@ -99,11 +103,13 @@ class email extends \APS\ResourceBase
         }
         return $this->API;
     }
-    
+
     /**
      * @verb(GET)
      * @path("/controlPanelLoginLink")
      * @return(string)
+     *
+     * @throws Exception
      */
     public function getControlPanelLoginLink()
     {

@@ -11,8 +11,6 @@
             <exclude>../../tests/spamexperts/config.php</exclude>
             <exclude>../../tests/spamexperts/testAppInstance.php</exclude>
             <exclude>../../tests/spamexperts/testSubscription.php</exclude>
-            <exclude>../../tests/domainTest.php</exclude>
-            <exclude>../../tests/serviceTest.php</exclude>
         </testsuite>
     </testsuites>
 

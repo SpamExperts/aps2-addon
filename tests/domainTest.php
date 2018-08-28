@@ -1,89 +1,31 @@
 <?php
 
-require_once "vendor/autoload.php";
-
-@session_start();
+require_once __DIR__ . "/../src/scripts/vendor/autoload.php";
+require_once __DIR__ . "/../src/scripts/domain.php";
 
 class domainTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @test
-     */
-    public function constructor()
+    public function testUnprovision()
     {
-        $domain = new domain();
+        $domainName = 'example.com';
 
-        $this->assertAttributeInstanceOf('Monolog\Logger', 'logger', $domain);
-        $this->assertAttributeInstanceOf('Report', 'report', $domain);
-    }
+        $apiMock = $this->getMockBuilder(\APIClient::class)
+            ->disableOriginalConstructor()
+            ->setMethods([ 'removeDomain' ])
+            ->getMock();
+        $apiMock->expects($this->once())
+            ->method( 'removeDomain')
+            ->with($this->equalTo($domainName));
 
-    // context admin login/pass
-    /**
-     *
-     */
-    public function API()
-    {
-        $domain = new domain();
-        $domain->context = new stdClass();
-        $domain->context->service = new stdClass();
+        /** @var $domain PHPUnit\Framework\MockObject\MockObject | domain */
+        $domain = $this->getMockBuilder(\domain::class)
+            ->setMethods([ 'API' ])
+            ->getMock();
+        $domain->expects($this->once())
+            ->method( 'API' )
+            ->will($this->returnValue($apiMock));
+        $domain->name = $domainName;
 
-        foreach (APIClientTest::$service as $attribute => $value) {
-            $domain->context->service->{$attribute} = $value;
-        }
-
-        $API = $domain->API();
-
-        $this->assertAttributeEquals($API, 'API', $domain);
-    }
-
-    /**
-     * @test
-     */
-    public function setAPI()
-    {
-        $domain = new domain();
-
-        $domain->setAPI();
-
-        $this->assertAttributeEquals(NULL, 'API', $domain);
-
-        $API = new APIClient((object) APIClientTest::$service);
-
-        $domain->setAPI($API);
-
-        $this->assertAttributeEquals($API, 'API', $domain);
-    }
-
-    /**
-     * @test
-     */
-    public function setAPSC()
-    {
-        $domain = new domain();
-
-        $domain->setAPSC();
-
-        $this->assertAttributeEquals(NULL, 'APSC', $domain);
-
-        $APSC = "APSC";
-
-        $domain->setAPSC($APSC);
-
-        $this->assertAttributeEquals($APSC, 'APSC', $domain);
-    }
-
-    /**
-     * @test
-     * @depends setAPSC
-     */
-    public function APSC()
-    {
-        $domain = new domain();
-
-        $domain->setAPSC("APSC");
-
-        $APSC = $domain->APSC();
-
-        $this->assertAttributeEquals($APSC, 'APSC', $domain);
+        $domain->unprovision();
     }
 }

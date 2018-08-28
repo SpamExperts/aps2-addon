@@ -155,12 +155,15 @@ class service extends \APS\ResourceBase
         $this->logger = new Logger("Service");
     }
 
+    /**
+     * @throws Exception
+     */
     public function provision()
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
         // Check APS Runtime Library version
-        $APS_VERSION = array_shift(explode('-', \Rest\RestService::VERSION));
+        list($APS_VERSION, ) = explode('-', \Rest\RestService::VERSION);
         $MIN_APS_VERSION = self::MIN_APS_VERSION;
         if ($APS_VERSION < $MIN_APS_VERSION) {
             throw new Exception("The minimum supported version of the APS Runtime Library is v$MIN_APS_VERSION for POA 6.0 and up; you have version v$APS_VERSION. Please update your environment accordingly and try to reinstall the instance.");
@@ -171,18 +174,33 @@ class service extends \APS\ResourceBase
         $this->logger->info(__FUNCTION__ . ": stop");
     }
 
+    /**
+     * @param null $service
+     *
+     * @codeCoverageIgnore
+     */
     public function configure($service = null /** @var $service service */)
     {
         $this->logger->info(__FUNCTION__ . ": start");
         $this->logger->info(__FUNCTION__ . ": stop");
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function unprovision()
     {
         $this->logger->info(__FUNCTION__ . ": start");
         $this->logger->info(__FUNCTION__ . ": stop");
     }
 
+    /**
+     * @param $version
+     *
+     * @codeCoverageIgnore
+     *
+     * @throws \APS\SchemaException
+     */
     public function upgrade($version)
     {
         $this->logger->info(__FUNCTION__ . ": start");
@@ -214,6 +232,12 @@ class service extends \APS\ResourceBase
         $this->logger->info(__FUNCTION__ . ": stop");
     }
 
+    /**
+     * @param $version
+     * @throws \APS\SchemaException
+     *
+     * @codeCoverageIgnore
+     */
     private function contextUpgrade($version)
     {
         switch ($version) {
@@ -312,6 +336,8 @@ class service extends \APS\ResourceBase
      * @verb(POST)
      * @path("/onContextAvailable")
      * @param("http://aps-standard.org/types/core/resource/1.0#Notification",body)
+     *
+     * @throws \APS\SchemaException
      */
     public function onContextAvailable($event)
     {
@@ -329,7 +355,12 @@ class service extends \APS\ResourceBase
         $this->logger->info(__METHOD__ . ": stop");
     }
 
-    private function onContextAvailabeSubscribe()
+    /**
+     * @throws Exception
+     *
+     * @codeCoverageIgnore
+     */
+    protected function onContextAvailabeSubscribe()
     {
         /**
          * Subscribe to the "context available" event to auto-protect resources
@@ -340,7 +371,12 @@ class service extends \APS\ResourceBase
         $this->APSC()->subscribe($this, $onContextAvailable);
     }
 
-    private function APSC()
+    /**
+     * @return \APS\ControllerProxy
+     *
+     * @codeCoverageIgnore
+     */
+    protected function APSC()
     {
         return $this->APSC ?: $this->APSC = \APS\Request::getController();
     }
