@@ -895,6 +895,13 @@ class context extends \APS\ResourceBase
         $this->logger->info(__FUNCTION__ . ": stop");
     }
 
+    /**
+     * @param $resource
+     * @return bool|mixed
+     *
+     * @throws \APS\SchemaException
+     * @throws Exception
+     */
     protected function createSEResource($resource)
     {
         $this->logger->info(__METHOD__ . ": start");
@@ -909,19 +916,19 @@ class context extends \APS\ResourceBase
         } else {
 
             $this->logger->info(__METHOD__ . ": New SE {$this->APSN['type']} resource");
-            $SEResource = \APS\TypeLibrary::newResourceByTypeId("http://aps.spamexperts.com/app/{$this->APSN['type']}/1.0");
+            $SEResource = $this->createResourceByTypeId("http://aps.spamexperts.com/app/{$this->APSN['type']}/1.0");
 
             ## Set resource properties
             $SEResource->name = $resource->{$this->APSN['name']};
             $SEResource->status = false;
 
             ## Set resource links
-            $SEResource->aps->links[0] = new \APS\Link($resource, $this->APSN['type'], $SEResource);
+            $SEResource->aps->links[0] = $this->makeAPSLinkInstance($resource, $this->APSN['type'], $SEResource);
 
             ## If email, link domain
             $email_a = explode('@', $resource->{$this->APSN['name']});
             if (isset($email_a[1])) {
-                $SEResource->aps->links[1] = new \APS\Link($this->getSEResource($email_a[1]), 'domain', $SEResource);
+                $SEResource->aps->links[1] = $this->makeAPSLinkInstance($this->getSEResource($email_a[1]), 'domain', $SEResource);
             }
 
             ## Link SE resource to the context
@@ -934,6 +941,23 @@ class context extends \APS\ResourceBase
         $this->logger->info(__METHOD__ . ": stop");
 
         return $return;
+    }
+
+    /**
+     * @param $typeId
+     * @return mixed
+     *
+     * @codeCoverageIgnore
+     */
+    protected function createResourceByTypeId($typeId)
+    {
+        return \APS\TypeLibrary::newResourceByTypeId($typeId);
+    }
+
+
+    protected function makeAPSLinkInstance($object, $name, $base)
+    {
+        return new \APS\Link($object, $name, $base);
     }
 
     /**
@@ -1102,6 +1126,8 @@ class context extends \APS\ResourceBase
     /**
      * @param $domain
      * @return bool
+     *
+     * @throws Exception
      */
     protected function addDomain($domain)
     {
@@ -1129,7 +1155,7 @@ class context extends \APS\ResourceBase
     /**
      * @return array
      */
-    private function getServiceMXRecords()
+    protected function getServiceMXRecords()
     {
         $mx = array();
 
@@ -1166,6 +1192,7 @@ class context extends \APS\ResourceBase
                 $records[$index] = rtrim($record->exchange, ".");
             }
         }
+
         return $records;
     }
 
@@ -1224,7 +1251,7 @@ class context extends \APS\ResourceBase
             ## Add SE MX records to domain collection
             if (count($SEMXs)) {
                 $this->logger->info(__FUNCTION__ . ": Creating new PA MX record resources");
-                $record = \APS\TypeLibrary::newResourceByTypeId("http://parallels.com/aps/types/pa/dns/record/mx/1.0");
+                $record = $this->createResourceByTypeId("http://parallels.com/aps/types/pa/dns/record/mx/1.0");
                 foreach ($SEMXs as $index => $SEMX) {
                     $this->logger->info(__FUNCTION__ . ": Setting up record: $SEMX -> {$domain->name}.");
                     $record->source      = $domain->name . ".";

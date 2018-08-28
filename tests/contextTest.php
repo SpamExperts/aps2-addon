@@ -108,16 +108,42 @@ class contextTest extends \PHPUnit\Framework\TestCase
     public function testDomainUnlink()
     {
         $domain = new stdClass;
-        $domain->domain = $domain->name = uniqid('domain') . '.test';
+        $domain->name = uniqid('domain') . '.test';
+
+        $domain->domain = new stdClass;
+        $domain->domain->aps = new stdClass;
+        $domain->domain->aps->id = uniqid('aps_id_');
+        $domain->domain->name = $domain->name;
+
+        $mxRecord = new stdClass;
+        $mxRecord->exchange = 'mx.example.com';
+        $mxRecord->aps = new stdClass;
+        $mxRecord->aps->id = uniqid('aps_id_');
+
+        $ioMock = $this->getMockBuilder(\APS\Proto::class)
+            ->setMethods([ 'sendRequest' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $ioMock->expects($this->once())
+            ->method( 'sendRequest');
+
+        $apscMock = $this->getMockBuilder(\APS\ControllerProxy::class)
+            ->setMethods([ 'getIo' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apscMock->expects($this->once())
+            ->method( 'getIo' )
+            ->willReturn($ioMock);
 
         /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
         $ctx = $this->getMockBuilder(\context::class)
-            ->setMethods([ 'revertMXRecords' ])
-            ->setConstructorArgs([ null, null ])
+            ->setMethods([ 'getPAMXRecords' ])
+            ->setConstructorArgs([ null, $apscMock ])
             ->getMock();
         $ctx->expects($this->once())
-            ->method( 'revertMXRecords')
-            ->with($this->equalTo($domain->domain));
+            ->method( 'getPAMXRecords')
+            ->with($this->equalTo($domain->domain))
+            ->willReturn([ $mxRecord ]);
 
         $ctx->domainsUnlink($domain);
     }
@@ -606,4 +632,157 @@ class contextTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testUpdateResources()
+    {
+        $domainResource = new stdClass;
+        $domainResource->name = 'example.com';
+        $domainResource->domain = new stdClass;
+        $domainResource->domain->domain = 'example.com';
+        $domainResource->domain->aps = new stdClass;
+        $domainResource->domain->aps->id = uniqid('aps_id_');
+        $domainResource->aps = new stdClass;
+        $domainResource->aps->id = uniqid('aps_id_');
+
+        $mxRecordResource = new stdClass;
+        $mxRecordResource->exchange = 'mx.example.com';
+
+        $subscriptionResource = new stdClass;
+        $subscriptionResource->apsType = 'http://aps.spamexperts.com/app/domain/1.0';
+        $subscriptionResource->limit = 100;
+        $subscriptionResource->usage = 10;
+        $resourcesCollection = new APS2TestResourcesCollection([ $subscriptionResource ]);
+
+        $seResourceByTypeId = new stdClass;
+        $seResourceByTypeId->aps = new stdClass;
+        $seResourceByTypeId->aps->links = [];
+
+        $apscMock = $this->getMockBuilder(\APS\ControllerProxy::class)
+            ->setMethods([ 'getResources', 'getResource', 'updateResource', 'linkResource' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apscMock->expects($this->any())
+            ->method( 'getResources' )
+            ->will(
+                $this->onConsecutiveCalls(
+                    [ $domainResource ],
+                    [ $mxRecordResource ],
+                    [ $mxRecordResource ],
+                    [ null ],
+                    [ null ]
+                )
+            );
+        $apscMock->expects($this->any())
+            ->method( 'getResource' )
+            ->will($this->returnValue($resourcesCollection));
+        $apscMock->expects($this->any())
+            ->method( 'linkResource' )
+            ->will($this->returnValue(true));
+
+        $apiMock = $this->getMockBuilder(\APIClient::class)
+            ->disableOriginalConstructor()
+            ->setMethods([ 'addDomain', 'setDomainProducts', 'assertOwner', 'addDomainUser' ])
+            ->getMock();
+        $apiMock->expects($this->once())
+            ->method( 'addDomain')
+            ->will($this->returnValue(true));
+        $apiMock->expects($this->once())
+            ->method( 'setDomainProducts')
+            ->will($this->returnValue(true));
+        $apiMock->expects($this->once())
+            ->method( 'assertOwner')
+            ->will($this->returnValue(true));
+        $apiMock->expects($this->once())
+            ->method( 'addDomainUser')
+            ->will($this->returnValue(true));
+
+        /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
+        $ctx = $this->getMockBuilder(\context::class)
+            ->setMethods([ 'getResourcesFromIDs', 'createResourceByTypeId', 'makeAPSLinkInstance', 'API' ])
+            ->setConstructorArgs([ $apiMock, $apscMock ])
+            ->getMock();
+        $ctx->expects($this->once())
+            ->method( 'getResourcesFromIDs')
+            ->willReturn([ $domainResource ]);
+        $ctx->expects($this->once())
+            ->method( 'createResourceByTypeId')
+            ->willReturn($seResourceByTypeId);
+        $ctx->expects($this->any())
+            ->method( 'makeAPSLinkInstance')
+            ->willReturn(null);
+        $ctx->expects($this->any())
+            ->method( 'API')
+            ->willReturn($apiMock);
+        $ctx->aps = new stdClass;
+        $ctx->aps->id = uniqid('aps_id_');
+        $ctx->subscription = new stdClass;
+        $ctx->subscription->aps = new stdClass;
+        $ctx->subscription->aps->id = uniqid('aps_id_');
+        $ctx->mx = [
+            uniqid('mx_record_') . '.',
+            uniqid('mx_record_') . '.',
+            uniqid('mx_record_') . '.'
+        ];
+
+        $ctx->domainProtect('"example.com"');
+    }
+
+
+    public function testEamilStatusCheck()
+    {
+        $subscriptionResource = new stdClass;
+        $subscriptionResource->apsType = 'http://aps.spamexperts.com/app/domain/1.0';
+        $subscriptionResource->limit = 100;
+        $subscriptionResource->usage = 10;
+        $resourcesCollection = new APS2TestResourcesCollection([ $subscriptionResource ]);
+
+        $apscMock = $this->getMockBuilder(\APS\ControllerProxy::class)
+            ->setMethods([ 'getResource', 'getResources' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apscMock->expects($this->any())
+            ->method( 'getResources' )
+            ->will(
+                $this->onConsecutiveCalls(
+                    [ null ]
+                )
+            );
+        $apscMock->expects($this->any())
+            ->method( 'getResource' )
+            ->will($this->returnValue($resourcesCollection));
+
+        $apiMock = $this->getMockBuilder(\APIClient::class)
+            ->disableOriginalConstructor()
+            ->setMethods([ 'checkEmailUser', 'addDomain' ])
+            ->getMock();
+        $apiMock->expects($this->never())
+            ->method( 'addDomain');
+
+        /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
+        $ctx = $this->getMockBuilder(\context::class)
+            ->setMethods([ 'API', 'addDomain' ])
+            ->setConstructorArgs([ $apiMock, $apscMock ])
+            ->getMock();
+        $ctx->aps = new stdClass;
+        $ctx->aps->id = uniqid('aps_id_');
+
+        $ctx->emailCheck('["test@example.com"]');
+    }
+
+}
+
+class APS2TestResourcesCollection extends stdClass
+{
+    public $login;
+
+    protected $resources = [];
+
+    public function __construct(array $resources = [])
+    {
+        $this->resources = $resources;
+    }
+
+    public function resources()
+    {
+        return $this->resources;
+    }
 }
