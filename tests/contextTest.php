@@ -267,4 +267,343 @@ class contextTest extends \PHPUnit\Framework\TestCase
         $event->source->id = $domainId;
         $ctx->onDomainAvailable($event);
     }
+
+    public function testOnSubscriptionLimitChanged()
+    {
+        $adminUsername = uniqid('admin_user_');
+        $adminPassword = uniqid('admin_pass_');
+        $adminEmail = "{$adminUsername}@example.com";
+        $adminDomainsLimit = 100500;
+
+        $apiMock = $this->getMockBuilder(\APIClient::class)
+            ->disableOriginalConstructor()
+            ->setMethods([ 'updateReseller', 'setResellerProducts' ])
+            ->getMock();
+        $apiMock->expects($this->once())
+            ->method( 'updateReseller')
+            ->with(
+                $this->equalTo($adminUsername),
+                $this->equalTo($adminPassword),
+                $this->equalTo($adminEmail),
+                $this->equalTo($adminDomainsLimit)
+            );
+        $apiMock->expects($this->once())
+            ->method( 'setResellerProducts')
+            ->with(
+                $this->equalTo($adminUsername),
+                $this->equalTo(array( 'incoming' => 1, 'outgoing' => 1, 'archiving' => 1, 'private_label' => 'none' ))
+            );
+
+        /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
+        $ctx = $this->getMockBuilder(\context::class)
+            ->setMethods([ 'getLimit' ])
+            ->setConstructorArgs([ $apiMock, null ])
+            ->getMock();
+        $ctx->expects($this->once())
+            ->method( 'getLimit')
+            ->will($this->returnValue($adminDomainsLimit));
+        $ctx->username = $adminUsername;
+        $ctx->password = $adminPassword;
+        $ctx->adminEmail = $adminEmail;
+
+        $ctx->onSubscriptionLimitChanged(1);
+    }
+
+    public function testDomainCheckByIds()
+    {
+        $ids = array(
+            '6c153a84-aa9e-11e8-a137-529269fb1459',
+            '6c15411e-aa9e-11e8-a137-529269fb1459',
+            '6c1543e4-aa9e-11e8-a137-529269fb1459'
+        );
+
+        $apscMock = $this->getMockBuilder(\APS\ControllerProxy::class)
+            ->setMethods([ 'getResource', 'getResources' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apscMock->expects($this->exactly(3))
+            ->method( 'getResource' )
+            ->will($this->returnValue(true));
+        $apscMock->expects($this->never())
+            ->method( 'getResources' )
+            ->will($this->returnValue([]));
+
+        /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
+        $ctx = $this->getMockBuilder(\context::class)
+            ->setMethods([ 'updateResources',  ])
+            ->setConstructorArgs([ null, $apscMock ])
+            ->getMock();
+        $ctx->expects($this->once())
+            ->method( 'updateResources');
+
+        $ctx->domainCheck(rawurlencode(json_encode($ids)));
+    }
+
+    public function testDomainCheckByNames()
+    {
+        $names = array(
+            'example.com',
+            'example.net',
+            'example.org'
+        );
+
+        $apscMock = $this->getMockBuilder(APS\ControllerProxy::class)
+            ->setMethods([ 'getResource', 'getResources' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apscMock->expects($this->never())
+            ->method( 'getResource' )
+            ->will($this->returnValue(true));
+        $apscMock->expects($this->once())
+            ->method( 'getResources' )
+            ->will($this->returnValue([]));
+
+        /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
+        $ctx = $this->getMockBuilder(\context::class)
+            ->setMethods([ 'updateResources',  ])
+            ->setConstructorArgs([ null, $apscMock ])
+            ->getMock();
+        $ctx->expects($this->once())
+            ->method( 'updateResources');
+        $ctx->account = new stdClass;
+        $ctx->account->aps = new stdClass;
+        $ctx->account->aps->id = uniqid('aps_id_');
+
+        $ctx->domainCheck(rawurlencode(json_encode($names)));
+    }
+
+    public function testDomainProtectByIds()
+    {
+        $ids = array(
+            '6c153a84-aa9e-11e8-a137-529269fb1459',
+            '6c15411e-aa9e-11e8-a137-529269fb1459',
+            '6c1543e4-aa9e-11e8-a137-529269fb1459'
+        );
+
+        $apscMock = $this->getMockBuilder(\APS\ControllerProxy::class)
+            ->setMethods([ 'getResource', 'getResources' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apscMock->expects($this->exactly(3))
+            ->method( 'getResource' )
+            ->will($this->returnValue(true));
+        $apscMock->expects($this->never())
+            ->method( 'getResources' )
+            ->will($this->returnValue([]));
+
+        /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
+        $ctx = $this->getMockBuilder(\context::class)
+            ->setMethods([ 'updateResources',  ])
+            ->setConstructorArgs([ null, $apscMock ])
+            ->getMock();
+        $ctx->expects($this->once())
+            ->method( 'updateResources');
+
+        $ctx->domainProtect(rawurlencode(json_encode($ids)));
+    }
+
+    public function testDomainUnprotectByIds()
+    {
+        $ids = array(
+            '6c153a84-aa9e-11e8-a137-529269fb1459',
+            '6c15411e-aa9e-11e8-a137-529269fb1459',
+            '6c1543e4-aa9e-11e8-a137-529269fb1459'
+        );
+
+        $apscMock = $this->getMockBuilder(\APS\ControllerProxy::class)
+            ->setMethods([ 'getResource', 'getResources' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apscMock->expects($this->exactly(3))
+            ->method( 'getResource' )
+            ->will($this->returnArgument(0));
+        $apscMock->expects($this->never())
+            ->method( 'getResources' )
+            ->will($this->returnValue([]));
+
+        /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
+        $ctx = $this->getMockBuilder(\context::class)
+            ->setMethods([ 'unprotectResources' ])
+            ->setConstructorArgs([ null, $apscMock ])
+            ->getMock();
+        $ctx->expects($this->once())
+            ->method( 'unprotectResources')
+            ->with($this->equalTo($ids));
+
+        $ctx->domainUnprotect(rawurlencode(json_encode($ids)));
+    }
+
+    public function testEmailCheckByIds()
+    {
+        $ids = array(
+            '6c153a84-aa9e-11e8-a137-529269fb1459',
+            '6c15411e-aa9e-11e8-a137-529269fb1459',
+            '6c1543e4-aa9e-11e8-a137-529269fb1459'
+        );
+
+        $apscMock = $this->getMockBuilder(\APS\ControllerProxy::class)
+            ->setMethods([ 'getResource', 'getResources' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apscMock->expects($this->exactly(3))
+            ->method( 'getResource' )
+            ->will($this->returnValue(true));
+        $apscMock->expects($this->never())
+            ->method( 'getResources' )
+            ->will($this->returnValue([]));
+
+        /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
+        $ctx = $this->getMockBuilder(\context::class)
+            ->setMethods([ 'updateResources',  ])
+            ->setConstructorArgs([ null, $apscMock ])
+            ->getMock();
+        $ctx->expects($this->once())
+            ->method( 'updateResources');
+
+        $ctx->emailCheck(rawurlencode(json_encode($ids)));
+    }
+
+    public function testEmailProtectByIds()
+    {
+        $ids = array(
+            '6c153a84-aa9e-11e8-a137-529269fb1459',
+            '6c15411e-aa9e-11e8-a137-529269fb1459',
+            '6c1543e4-aa9e-11e8-a137-529269fb1459'
+        );
+
+        $apscMock = $this->getMockBuilder(\APS\ControllerProxy::class)
+            ->setMethods([ 'getResource', 'getResources' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apscMock->expects($this->exactly(3))
+            ->method( 'getResource' )
+            ->will($this->returnValue(true));
+        $apscMock->expects($this->never())
+            ->method( 'getResources' )
+            ->will($this->returnValue([]));
+
+        /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
+        $ctx = $this->getMockBuilder(\context::class)
+            ->setMethods([ 'updateResources',  ])
+            ->setConstructorArgs([ null, $apscMock ])
+            ->getMock();
+        $ctx->expects($this->once())
+            ->method( 'updateResources');
+
+        $ctx->emailProtect(rawurlencode(json_encode($ids)));
+    }
+
+    public function testEmailUnprotectByIds()
+    {
+        $ids = array(
+            '6c153a84-aa9e-11e8-a137-529269fb1459',
+            '6c15411e-aa9e-11e8-a137-529269fb1459',
+            '6c1543e4-aa9e-11e8-a137-529269fb1459'
+        );
+
+        $apscMock = $this->getMockBuilder(\APS\ControllerProxy::class)
+            ->setMethods([ 'getResource', 'getResources' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apscMock->expects($this->exactly(3))
+            ->method( 'getResource' )
+            ->will($this->returnArgument(0));
+        $apscMock->expects($this->never())
+            ->method( 'getResources' )
+            ->will($this->returnValue([]));
+
+        /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
+        $ctx = $this->getMockBuilder(\context::class)
+            ->setMethods([ 'unprotectResources' ])
+            ->setConstructorArgs([ null, $apscMock ])
+            ->getMock();
+        $ctx->expects($this->once())
+            ->method( 'unprotectResources')
+            ->with($this->equalTo($ids));
+
+        $ctx->emailUnprotect(rawurlencode(json_encode($ids)));
+    }
+
+    public function testGetAuthTicketForDomainUser()
+    {
+        $authTicket = uniqid('auth_ticket_');
+
+        $apscMock = $this->getMockBuilder(\APS\ControllerProxy::class)
+            ->setMethods([ 'getResources' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apscMock->expects($this->any())
+            ->method( 'getResources' )
+            ->will($this->returnValue([ 'res' ]));
+
+        $apiMock = $this->getMockBuilder(\APIClient::class)
+            ->disableOriginalConstructor()
+            ->setMethods([ 'getAuthTicket' ])
+            ->getMock();
+        $apiMock->expects($this->once())
+            ->method( 'getAuthTicket')
+            ->will($this->returnValue($authTicket));
+
+        /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
+        $ctx = $this->getMockBuilder(\context::class)
+            ->setMethods([ 'getResource' ])
+            ->setConstructorArgs([ $apiMock, $apscMock ])
+            ->getMock();
+        $ctx->expects($this->never())
+            ->method( 'getResource');
+        $ctx->service = new stdClass;
+        $ctx->service->ssl = true;
+        $ctx->service->hostname = 'host.name.test';
+        $ctx->cp_domain = new stdClass;
+        $ctx->cp_domain->limit = 1;
+        $ctx->aps = new stdClass;
+        $ctx->aps->id = uniqid('aps_id_');
+
+        $this->assertContains(
+            "?authticket={$authTicket}",
+            $ctx->getAuthTicket('example.com')
+        );
+    }
+
+    public function testGetAuthTicketForEmailUser()
+    {
+        $authTicket = uniqid('auth_ticket_');
+
+        $apscMock = $this->getMockBuilder(\APS\ControllerProxy::class)
+            ->setMethods([ 'getResources' ])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apscMock->expects($this->any())
+            ->method( 'getResources' )
+            ->will($this->returnValue([ 'res' ]));
+
+        $apiMock = $this->getMockBuilder(\APIClient::class)
+            ->disableOriginalConstructor()
+            ->setMethods([ 'getAuthTicket' ])
+            ->getMock();
+        $apiMock->expects($this->once())
+            ->method( 'getAuthTicket')
+            ->will($this->returnValue($authTicket));
+
+        /** @var $ctx PHPUnit\Framework\MockObject\MockObject | context */
+        $ctx = $this->getMockBuilder(\context::class)
+            ->setMethods([ 'getResource' ])
+            ->setConstructorArgs([ $apiMock, $apscMock ])
+            ->getMock();
+        $ctx->expects($this->never())
+            ->method( 'getResource');
+        $ctx->service = new stdClass;
+        $ctx->service->ssl = true;
+        $ctx->service->hostname = 'host.name.test';
+        $ctx->cp_domain = new stdClass;
+        $ctx->cp_domain->limit = 1;
+        $ctx->aps = new stdClass;
+        $ctx->aps->id = uniqid('aps_id_');
+
+        $this->assertContains(
+            "?authticket={$authTicket}",
+            $ctx->getAuthTicket('test@example.com')
+        );
+    }
+
 }

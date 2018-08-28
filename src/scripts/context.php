@@ -496,6 +496,8 @@ class context extends \APS\ResourceBase
      * @param("http://aps-standard.org/types/core/resource/1.0#Notification",body)
      *
      * @throws Exception
+     *
+     * @codeCoverageIgnore
      */
     public function onServiceChanged($event)
     {
@@ -528,6 +530,8 @@ class context extends \APS\ResourceBase
      * @verb(POST)
      * @path("/onSubscriptionLimitChanged")
      * @param("http://aps-standard.org/types/core/resource/1.0#Notification",body)
+     *
+     * @throws \APS\SchemaException
      */
     public function onSubscriptionLimitChanged($event)
     {
@@ -580,14 +584,18 @@ class context extends \APS\ResourceBase
         $this->APSN = array('type' => 'domain', 'name' => 'name');
         $identifiers = json_decode(rawurldecode($IDs));
         $idType = (!$identifiers || (strlen($identifiers[0]) == 36 && strpos($identifiers[0], '.') === false)) ? 'IDs' : 'Names';
+
         return $this->updateResources($this->{"getResourcesFrom$idType"}($identifiers));
     }
 
     ## Protect selected domains
+
     /**
      * @verb(PUT)
      * @path("/domainProtect")
      * @param(string,body)
+     *
+     * @throws Exception
      */
     public function domainProtect($IDs)
     {
@@ -598,10 +606,13 @@ class context extends \APS\ResourceBase
     }
 
     ## Unprotect selected domains
+
     /**
      * @verb(PUT)
      * @path("/domainUnprotect")
      * @param(string,body)
+     *
+     * @throws Exception
      */
     public function domainUnprotect($IDs)
     {
@@ -619,6 +630,8 @@ class context extends \APS\ResourceBase
      * @verb(PUT)
      * @path("/emailCheck")
      * @param(string,body)
+     *
+     * @throws Exception
      */
     public function emailCheck($IDs)
     {
@@ -627,10 +640,13 @@ class context extends \APS\ResourceBase
     }
 
     ## Protect selected email resources
+
     /**
      * @verb(PUT)
      * @path("/emailProtect")
      * @param(string,body)
+     *
+     * @throws Exception
      */
     public function emailProtect($IDs)
     {
@@ -641,10 +657,13 @@ class context extends \APS\ResourceBase
     }
 
     ## Unprotect  selected email resources
+
     /**
      * @verb(PUT)
      * @path("/emailUnprotect")
      * @param(string,body)
+     *
+     * @throws Exception
      */
     public function emailUnprotect($IDs)
     {
@@ -719,11 +738,14 @@ class context extends \APS\ResourceBase
     }
 
     ## Get a CP authentication ticket
+
     /**
      * @verb(GET)
      * @path("/getAuthTicket")
      * @param(string,query)
      * @return(string)
+     *
+     * @throws Exception
      */
     public function getAuthTicket($username)
     {
@@ -750,6 +772,8 @@ class context extends \APS\ResourceBase
      * @path("/report")
      * @param()
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public function report()
     {
