@@ -30,14 +30,22 @@ class APIClientTest extends \PHPUnit\Framework\TestCase
      * @param $message
      * @param $assertion
      * @param $exception
+     * @param $thisMethodMocks
      */
-    public function APICall($call, $arguments, $message, $assertion, $exception)
+    public function APICall($call, $arguments, $message, $assertion, $exception, $thisMethodMocks = array())
     {
-        $this->assertEquals($assertion, call_user_func_array(array($this->clientMock($message, $exception), $call), $arguments));
+        if (! is_array($thisMethodMocks)) {
+            $thisMethodMocks = array();
+        }
+
+        $this->assertEquals($assertion, call_user_func_array(array($this->clientMock($message, $exception, $thisMethodMocks), $call), $arguments));
     }
 
     public function APICallCasesProvider()
     {
+        $resellerStub = new stdClass;
+        $resellerStub->id = uniqid('admin_id_');
+
         return array(
             array( "addDomain",           array("domain.com"),       "{\"messages\": {\"success\": [\"Domain 'domain.com' added\"]}}", true, false ),
             array( "addDomain",           array("domain.com"),       "{\"messages\": {\"error\": [\"Domain already exists.\"]}}", true, false ),
@@ -91,15 +99,60 @@ class APIClientTest extends \PHPUnit\Framework\TestCase
             array( "checkEmailUser",      array("email@example.com"),       "other",            false, false ),
             array( "checkEmailUser",      array("email@example.com"),       "",                 false, true  ),
 
+            array( "getIncoming",         array(),                          "[\"incoming\"]",   true, false ),
+            array( "getIncoming",         array(),                          "",                 false, false ),
+            array( "getIncoming",         array(),                          "",                 false, true ),
+
+            array( "getIncomingDomains",  array("username"),                "100500",           true, false ),
+            array( "getIncomingDomains",  array("username"),                "",                 false, false ),
+            array( "getIncomingDomains",  array("username"),                "",                 false, true ),
+
+            array( "getIncomingUsers",    array("username"),                "100500",           true, false ),
+            array( "getIncomingUsers",    array("username"),                "",                 false, false ),
+            array( "getIncomingUsers",    array("username"),                "",                 false, true ),
+
+            array( "getOutgoing",         array(),                          "[\"outgoing\"]",   true, false ),
+            array( "getOutgoing",         array(),                          "",                 false, false ),
+            array( "getOutgoing",         array(),                          "",                 false, true ),
+
+            array( "getOutgoingDomains",  array("username"),                "100500",           true, false ),
+            array( "getOutgoingDomains",  array("username"),                "",                 false, false ),
+            array( "getOutgoingDomains",  array("username"),                "",                 false, true ),
+
+            array( "getOutgoingUsers",    array("username"),                "100500",           true, false ),
+            array( "getOutgoingUsers",    array("username"),                "",                 false, false ),
+            array( "getOutgoingUsers",    array("username"),                "",                 false, true ),
+
+            array( "getArchiving",         array(),                          "[\"archiving\"]", true, false ),
+            array( "getArchiving",         array(),                          "",                 false, false ),
+            array( "getArchiving",         array(),                          "",                 false, true ),
+
+            array( "getArchivingDomains",  array("username"),                "100500",           true, false ),
+            array( "getArchivingDomains",  array("username"),                "",                 false, false ),
+            array( "getArchivingDomains",  array("username"),                "",                 false, true ),
+
             array( "addReseller",         array("u", "p", "e"),      "_Success_",        true,  false ),
             array( "addReseller",         array("u", "p", "e"),      "",                 false, false ),
             array( "addReseller",         array("u", "p", "e"),      "other",            false, false ),
             array( "addReseller",         array("u", "p", "e"),      "",                 false, true  ),
+            array( "addReseller",         array("u", "p", "e"),      "_alreadY_",        true,  false, array( 'updateReseller' => $this->returnValue(true) )  ),
 
             array( "removeReseller",      array("u", "p", "e"),      "",                 true,  false ),
             array( "removeReseller",      array("u", "p", "e"),      "success",          false, false ),
             array( "removeReseller",      array("u", "p", "e"),      "other",            false, false ),
             array( "removeReseller",      array("u", "p", "e"),      "",                 false, true  ),
+
+            array( "updateReseller",      array("u", "p", "e"),      "_Success_",        true,  false, array( 'getReseller' => $this->returnValue($resellerStub) ) ),
+            array( "updateReseller",      array("u", "p", "e"),      "",                 false, false, array( 'getReseller' => $this->returnValue($resellerStub) ) ),
+            array( "updateReseller",      array("u", "p", "e"),      "other",            false, false, array( 'getReseller' => $this->returnValue($resellerStub) ) ),
+            array( "updateReseller",      array("u", "p", "e"),      "",                 false, true, array( 'getReseller' => $this->returnValue($resellerStub) )  ),
+            array( "updateReseller",      array("u", "p", "e"),      "_SuccEss_",        true,  false, array( 'getReseller' => $this->returnValue($resellerStub) )  ),
+            array( "updateReseller",      array("u", "p", "e"),      "_SuccEss_",        true,  false, array( 'getReseller' => $this->onConsecutiveCalls(false, $resellerStub), 'addReseller' => $this->returnValue(true) )  ),
+
+            array( "getReseller",         array("u", "p", "e"),      "[{\"id\":1, \"domainslimit\":100}]",        true,  false ),
+            array( "getReseller",         array("u", "p", "e"),      "",                 false, false ),
+            array( "getReseller",         array("u", "p", "e"),      "other",            false, false ),
+            array( "getReseller",         array("u", "p", "e"),      "",                 false, true  ),
 
             array( "setResellerProducts", array("u", array()),       "_Success_",        true,  false ),
             array( "setResellerProducts", array("u", array()),       "",                 false, false ),
@@ -109,6 +162,24 @@ class APIClientTest extends \PHPUnit\Framework\TestCase
             array( "getAuthTicket",       array("username"),         "ticket",        "ticket", false ),
             array( "getAuthTicket",       array("username"),         "",                 "",    false ),
             array( "getAuthTicket",       array("username"),         "",                 false, true  ),
+
+            array( "getOwner",         array("example.com"),      "{\"username\":\"user\"}",        "user",  false ),
+            array( "getOwner",         array("example.com"),      "",                 false, false ),
+            array( "getOwner",         array("example.com"),      "other",            false, false ),
+            array( "getOwner",         array("example.com"),      "",                 false, true  ),
+
+            array( "assertOwner",         array("example.com", "owner"),      "{\"username\":\"user\"}",        true,  false, array( 'getOwner' => $this->returnValue("owner") ) ),
+            array( "assertOwner",         array("example.com", "owner"),      "__SUccess@!__",                 true, false, array( 'getOwner' => $this->returnValue("another_owner") ) ),
+            array( "assertOwner",         array("example.com", "owner"),      "other",            false, false, array( 'getOwner' => $this->returnValue("another_owner") ) ),
+            array( "assertOwner",         array("example.com", "owner"),      "",                 false, true, array( 'getOwner' => $this->returnValue("another_owner") )  ),
+
+            array( "wipeReseller",       array("username"),         "",                 true, false ),
+            array( "wipeReseller",       array("username"),         "err msg goes here",false,    false ),
+            array( "wipeReseller",       array("username"),         "",                 false, true  ),
+
+            array( "getPrivateLabel",    array(),         "[\"whitelabel\"]",           true, false ),
+            array( "getPrivateLabel",    array(),         "err msg goes here",          false,    false ),
+            array( "getPrivateLabel",    array(),         "",                           false, true  ),
 
             array( "setDomainProducts",   array(
                                               "example.com",
@@ -142,7 +213,7 @@ class APIClientTest extends \PHPUnit\Framework\TestCase
     }
 
     // Mock Guzzle's 'get' method with a custom response or raise an exception; get the rest of the client intact for testing
-    private function clientMock($message, $exception)
+    private function clientMock($message, $exception, $thisMethodMocks = array())
     {
         $response = $this->getMockBuilder('Guzzle\Http\Message\Response')
             ->setMethods([ 'getBody' ])
@@ -164,10 +235,14 @@ class APIClientTest extends \PHPUnit\Framework\TestCase
         }));
 
         $client = $this->getMockBuilder('APIClient')
-            ->setMethods([ 'get' ])
+            ->setMethods(array_merge([ 'get' ], array_keys($thisMethodMocks)))
             ->setConstructorArgs([ $this->service() ])
             ->getMock();
         $client->method('get')->willReturn($request);
+
+        foreach ($thisMethodMocks as $methodName => $action) {
+            $client->method($methodName)->will($action);
+        }
 
         return $client;
     }
