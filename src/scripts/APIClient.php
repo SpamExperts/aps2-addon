@@ -751,6 +751,8 @@ class APIClient extends Guzzle\Http\Client
     {
         $this->logger->debug(__FUNCTION__ . ": " . "Verify and set correct owner");
 
+        $domain = $this->toLowercase($domain);
+
         try {
             $currentOwner = $this->getOwner($domain);
             if ($currentOwner != $owner) {
@@ -833,5 +835,10 @@ class APIClient extends Guzzle\Http\Client
         $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
+    }
+
+    public function toLowercase($string)
+    {
+        return function_exists('mb_strtolower') ? mb_strtolower($string, 'UTF-8') : strtolower($string);
     }
 }

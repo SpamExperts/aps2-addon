@@ -1000,6 +1000,8 @@ class context extends \APS\ResourceBase
      */
     protected function checkProtectionStatus($name)
     {
+        $name = $this->API()->toLowercase($name);
+
         $type = count($email_a = explode('@', $name)) == 1 ? "Domain" : "Email";
 
         if ($w =
@@ -1178,9 +1180,9 @@ class context extends \APS\ResourceBase
     protected function getPAMXRecords($domain, $io = '', $asExchangeArray = false)
     {
         $rql = "and(implementing(http://parallels.com/aps/types/pa/dns/record/mx/1.0),";
-        if ($io) {
+        if ($io && is_array($this->mx)) {
             // Get only SE records or except SE records
-            $SEMXs = implode(',', $this->mx);
+            $SEMXs = join(',', $this->mx);
             $rql .= "$io(exchange,($SEMXs)),";
         }
 
