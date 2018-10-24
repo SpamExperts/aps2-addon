@@ -1,3 +1,8 @@
+# 2.0-21
+
+* Adds a more detailed warning for the case (#42).
+* Make all the domain checks executing on lower-cased domains (#43).
+
 # 2.0-20
 
 * Application sets incorrect usage values in OSA every night (#38).
