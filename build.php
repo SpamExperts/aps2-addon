@@ -55,7 +55,7 @@ if (isset($options['test'])) {
     exit($return_var);
 }
 
-exec("php composer.phar install -d $app/scripts");
+exec("php composer.phar install --no-dev -d $app/scripts");
 
 if (!isset($options['dev'])) {
     exec("rm -rf \"$app/scripts/composer.json\" \"$app/scripts/composer.lock\" ");
