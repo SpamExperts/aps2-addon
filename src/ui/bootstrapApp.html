@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <script>
+      // On the client side, window.location.href provides the path to the page
+      var url = window.location.href.split('/');
+      window.dojoConfig = {
+         packages: [
+            {name: 'app', location: url.slice(0, -1).join('/')},
+            {name: 'pacs', location: url.slice(0, -3).join('/')}
+         ]
+      };
+   </script>
+
+   <script type="text/javascript" src="/aps/2/ui/runtime/client/aps/aps.js"></script>
+   <script>
+      require([
+         "aps/load",
+         "aps/ready!"
+      ], function(load){
+         load(["aps/PageContainer"], "aps-frame");
+      });
+   </script>
+</head>
+<body>
+<div id="aps-frame" class="ccp-content-body"></div>
+</body>
+</html>

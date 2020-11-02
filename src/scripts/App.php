@@ -2,5 +2,5 @@
 
 class App
 {
-    const VERSION = "{{{ VERSION }}}";
+    const VERSION = "2.0-20";
 }

@@ -359,11 +359,6 @@ class context extends \APS\ResourceBase
         $this->logger->debug(__METHOD__ . ": stop");
     }
 
-    /**
-     * @param null $context
-     *
-     * @codeCoverageIgnore
-     */
     public function configure($context = null /** @var $context context */)
     {
         $this->logger->info(__FUNCTION__ . ": start");
@@ -405,8 +400,6 @@ class context extends \APS\ResourceBase
      * @verb(POST)
      * @path("/onDomainAvailable")
      * @param("http://aps-standard.org/types/core/resource/1.0#Notification",body)
-     *
-     * @throws Exception
      */
     public function onDomainAvailable($event)
     {
@@ -470,21 +463,11 @@ class context extends \APS\ResourceBase
         $this->logger->info(__METHOD__ . ": stop");
     }
 
-    /**
-     * @return bool
-     *
-     * @codeCoverageIgnore
-     */
     public function domainAutoprotectionDisabled()
     {
         return isset($this->auto_protect_domain->limit) && '0' === strval($this->auto_protect_domain->limit);
     }
 
-    /**
-     * @return bool
-     *
-     * @codeCoverageIgnore
-     */
     public function emailAutoprotectionDisabled()
     {
         return isset($this->auto_protect_email->limit) && '0' === strval($this->auto_protect_email->limit);
@@ -494,10 +477,6 @@ class context extends \APS\ResourceBase
      * @verb(POST)
      * @path("/onServiceChanged")
      * @param("http://aps-standard.org/types/core/resource/1.0#Notification",body)
-     *
-     * @throws Exception
-     *
-     * @codeCoverageIgnore
      */
     public function onServiceChanged($event)
     {
@@ -530,8 +509,6 @@ class context extends \APS\ResourceBase
      * @verb(POST)
      * @path("/onSubscriptionLimitChanged")
      * @param("http://aps-standard.org/types/core/resource/1.0#Notification",body)
-     *
-     * @throws \APS\SchemaException
      */
     public function onSubscriptionLimitChanged($event)
     {
@@ -577,25 +554,20 @@ class context extends \APS\ResourceBase
      * @verb(PUT)
      * @path("/domainCheck")
      * @param(string,body)
-     * @return array
      */
     public function domainCheck($IDs)
     {
         $this->APSN = array('type' => 'domain', 'name' => 'name');
         $identifiers = json_decode(rawurldecode($IDs));
         $idType = (!$identifiers || (strlen($identifiers[0]) == 36 && strpos($identifiers[0], '.') === false)) ? 'IDs' : 'Names';
-
         return $this->updateResources($this->{"getResourcesFrom$idType"}($identifiers));
     }
 
     ## Protect selected domains
-
     /**
      * @verb(PUT)
      * @path("/domainProtect")
      * @param(string,body)
-     *
-     * @throws Exception
      */
     public function domainProtect($IDs)
     {
@@ -606,13 +578,10 @@ class context extends \APS\ResourceBase
     }
 
     ## Unprotect selected domains
-
     /**
      * @verb(PUT)
      * @path("/domainUnprotect")
      * @param(string,body)
-     *
-     * @throws Exception
      */
     public function domainUnprotect($IDs)
     {
@@ -630,8 +599,6 @@ class context extends \APS\ResourceBase
      * @verb(PUT)
      * @path("/emailCheck")
      * @param(string,body)
-     *
-     * @throws Exception
      */
     public function emailCheck($IDs)
     {
@@ -640,13 +607,10 @@ class context extends \APS\ResourceBase
     }
 
     ## Protect selected email resources
-
     /**
      * @verb(PUT)
      * @path("/emailProtect")
      * @param(string,body)
-     *
-     * @throws Exception
      */
     public function emailProtect($IDs)
     {
@@ -657,13 +621,10 @@ class context extends \APS\ResourceBase
     }
 
     ## Unprotect  selected email resources
-
     /**
      * @verb(PUT)
      * @path("/emailUnprotect")
      * @param(string,body)
-     *
-     * @throws Exception
      */
     public function emailUnprotect($IDs)
     {
@@ -679,8 +640,6 @@ class context extends \APS\ResourceBase
     /**
      * @verb(GET)
      * @path("/protectAll")
-     *
-     * @codeCoverageIgnore
      */
     public function protectAll()
     {
@@ -691,8 +650,6 @@ class context extends \APS\ResourceBase
     /**
      * @verb(GET)
      * @path("/autoprotectAll")
-     *
-     * @codeCoverageIgnore
      */
     public function autoprotectAll()
     {
@@ -713,8 +670,6 @@ class context extends \APS\ResourceBase
     /**
      * @verb(GET)
      * @path("/unprotectAll")
-     *
-     * @codeCoverageIgnore
      */
     public function unprotectAll()
     {
@@ -725,8 +680,6 @@ class context extends \APS\ResourceBase
     /**
      * @verb(GET)
      * @path("/refreshContainer")
-     *
-     * @codeCoverageIgnore
      */
     public function refreshContainer()
     {
@@ -738,14 +691,11 @@ class context extends \APS\ResourceBase
     }
 
     ## Get a CP authentication ticket
-
     /**
      * @verb(GET)
      * @path("/getAuthTicket")
      * @param(string,query)
      * @return(string)
-     *
-     * @throws Exception
      */
     public function getAuthTicket($username)
     {
@@ -771,9 +721,6 @@ class context extends \APS\ResourceBase
      * @verb(GET)
      * @path("/report")
      * @param()
-     * @return array
-     *
-     * @codeCoverageIgnore
      */
     public function report()
     {
@@ -793,7 +740,7 @@ class context extends \APS\ResourceBase
      * @param bool $protect Whether to protect the resource or not
      * @return array
      */
-    protected function updateResources($resources, $protect = false)
+    private function updateResources($resources, $protect = false)
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
@@ -837,7 +784,7 @@ class context extends \APS\ResourceBase
         return $SEResources;
     }
 
-    protected function protectResource($resource)
+    private function protectResource($resource)
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
@@ -882,7 +829,7 @@ class context extends \APS\ResourceBase
         $this->logger->info(__FUNCTION__ . ": stop");
     }
 
-    protected function unprotectResources($resources)
+    private function unprotectResources($resources)
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
@@ -895,14 +842,7 @@ class context extends \APS\ResourceBase
         $this->logger->info(__FUNCTION__ . ": stop");
     }
 
-    /**
-     * @param $resource
-     * @return bool|mixed
-     *
-     * @throws \APS\SchemaException
-     * @throws Exception
-     */
-    protected function createSEResource($resource)
+    private function createSEResource($resource)
     {
         $this->logger->info(__METHOD__ . ": start");
 
@@ -916,19 +856,19 @@ class context extends \APS\ResourceBase
         } else {
 
             $this->logger->info(__METHOD__ . ": New SE {$this->APSN['type']} resource");
-            $SEResource = $this->createResourceByTypeId("http://aps.spamexperts.com/app/{$this->APSN['type']}/1.0");
+            $SEResource = \APS\TypeLibrary::newResourceByTypeId("http://aps.spamexperts.com/app/{$this->APSN['type']}/1.0");
 
             ## Set resource properties
             $SEResource->name = $resource->{$this->APSN['name']};
             $SEResource->status = false;
 
             ## Set resource links
-            $SEResource->aps->links[0] = $this->makeAPSLinkInstance($resource, $this->APSN['type'], $SEResource);
+            $SEResource->aps->links[0] = new \APS\Link($resource, $this->APSN['type'], $SEResource);
 
             ## If email, link domain
             $email_a = explode('@', $resource->{$this->APSN['name']});
             if (isset($email_a[1])) {
-                $SEResource->aps->links[1] = $this->makeAPSLinkInstance($this->getSEResource($email_a[1]), 'domain', $SEResource);
+                $SEResource->aps->links[1] = new \APS\Link($this->getSEResource($email_a[1]), 'domain', $SEResource);
             }
 
             ## Link SE resource to the context
@@ -943,30 +883,7 @@ class context extends \APS\ResourceBase
         return $return;
     }
 
-    /**
-     * @param $typeId
-     * @return mixed
-     *
-     * @codeCoverageIgnore
-     */
-    protected function createResourceByTypeId($typeId)
-    {
-        return \APS\TypeLibrary::newResourceByTypeId($typeId);
-    }
-
-
-    protected function makeAPSLinkInstance($object, $name, $base)
-    {
-        return new \APS\Link($object, $name, $base);
-    }
-
-    /**
-     * @param $name
-     * @param null $path
-     * @return mixed
-     * @throws Exception
-     */
-    protected function getSEResource($name, $path = null)
+    private function getSEResource($name, $path = null)
     {
         $type = count(explode('@', $name)) == 1 ? "domain" : "email";
 
@@ -978,12 +895,7 @@ class context extends \APS\ResourceBase
         return array_pop($resources);
     }
 
-    /**
-     * @param $name
-     * @return mixed
-     * @throws Exception
-     */
-    protected function getResource($name)
+    private function getResource($name)
     {
         $by_name = count(explode('@', $name)) == 1 ? 'name' : 'login';
         $type = $by_name == 'name' ? "http://parallels.com/aps/types/pa/dns/zone/1.0" : "http://aps-standard.org/types/core/service-user/1.0";
@@ -993,15 +905,8 @@ class context extends \APS\ResourceBase
         return array_pop($resources);
     }
 
-    /**
-     * @param $name
-     * @return bool
-     * @throws Exception
-     */
-    protected function checkProtectionStatus($name)
+    private function checkProtectionStatus($name)
     {
-        $name = $this->API()->toLowercase($name);
-
         $type = count($email_a = explode('@', $name)) == 1 ? "Domain" : "Email";
 
         if ($w =
@@ -1017,12 +922,7 @@ class context extends \APS\ResourceBase
         return !$w;
     }
 
-    /**
-     * @param $apsType
-     * @return bool
-     * @throws \APS\SchemaException
-     */
-    protected function exceedingLimit($apsType)
+    private function exceedingLimit($apsType)
     {
         $subscriptionResources = $this->APSC()->getResource($this->subscription->aps->id)->resources();
 
@@ -1035,12 +935,7 @@ class context extends \APS\ResourceBase
         return false;
     }
 
-    /**
-     * @param $apsType
-     * @return null
-     * @throws \APS\SchemaException
-     */
-    protected function getLimit($apsType)
+    private function getLimit($apsType)
     {
         $subscriptionResources = $this->APSC()->getResource($this->subscription->aps->id)->resources();
 
@@ -1053,52 +948,28 @@ class context extends \APS\ResourceBase
         return null;
     }
 
-    /**
-     * @param $IDs
-     * @return array
-     * @throws Exception
-     */
-    protected function getResourcesFromIDs($IDs)
+    private function getResourcesFromIDs($IDs)
     {
         $type = $this->APSN['type'] == 'domain' ? "http://parallels.com/aps/types/pa/dns/zone/1.0" : "http://aps-standard.org/types/core/service-user/1.0";
         return !empty($IDs) ? array_map(array($this->APSC(), 'getResource'), $IDs) : $this->APSC()->getResources("implementing($type)");
     }
 
-    /**
-     * @param $names
-     * @return array
-     * @throws Exception
-     *
-     * @codeCoverageIgnore
-     */
-    protected function getResourcesFromNames($names)
+    private function getResourcesFromNames($names)
     {
         $names = implode(',', $names);
-
         return $this->APSC()->getResources("in(name,($names))", "/aps/2/resources/{$this->account->aps->id}/domains");
     }
 
-    /**
-     * @param $items
-     * @param $property
-     * @return mixed
-     */
-    protected function getAssocArray($items, $property)
+    private function getAssocArray($items, $property)
     {
-        return array_reduce($items, function ($items, $item) use ($property) {
-                $items[$item->{$property}] = $item; return $items;
-            }, array());
+        return array_reduce($items, function ($items, $item) use ($property) { $items[$item->{$property}] = $item; return $items; }, array());
     }
 
 
     ## Reseller
 
 
-    /**
-     * @return bool
-     * @throws \APS\SchemaException
-     */
-    protected function createReseller()
+    private function createReseller()
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
@@ -1125,13 +996,7 @@ class context extends \APS\ResourceBase
     ## Domain
 
 
-    /**
-     * @param $domain
-     * @return bool
-     *
-     * @throws Exception
-     */
-    protected function addDomain($domain)
+    private function addDomain($domain)
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
@@ -1154,15 +1019,12 @@ class context extends \APS\ResourceBase
     ## MX Records
 
 
-    /**
-     * @return array
-     */
-    protected function getServiceMXRecords()
+    private function getServiceMXRecords()
     {
         $mx = array();
 
         for ($i = 1; $i <= 4; $i++) {
-            if (isset($this->service->{"mx$i"})) {
+            if ($this->service->{"mx$i"}) {
                 $mx[] = $this->service->{"mx$i"} . ".";
             }
         }
@@ -1170,19 +1032,12 @@ class context extends \APS\ResourceBase
         return $mx;
     }
 
-    /**
-     * @param $domain
-     * @param string $io
-     * @param bool $asExchangeArray
-     * @return array
-     * @throws Exception
-     */
-    protected function getPAMXRecords($domain, $io = '', $asExchangeArray = false)
+    private function getPAMXRecords($domain, $io = '', $asExchangeArray = false)
     {
         $rql = "and(implementing(http://parallels.com/aps/types/pa/dns/record/mx/1.0),";
-        if ($io && is_array($this->mx)) {
+        if ($io) {
             // Get only SE records or except SE records
-            $SEMXs = join(',', $this->mx);
+            $SEMXs = implode(',', $this->mx);
             $rql .= "$io(exchange,($SEMXs)),";
         }
 
@@ -1194,27 +1049,15 @@ class context extends \APS\ResourceBase
                 $records[$index] = rtrim($record->exchange, ".");
             }
         }
-
         return $records;
     }
 
-    /**
-     * @param $domain
-     * @return bool
-     * @throws Exception
-     *
-     * @codeCoverageIgnore
-     */
-    protected function checkMXRecords($domain)
+    private function checkMXRecords($domain)
     {
         return count($this->mx) == count($this->getPAMXRecords($domain, 'in'));
     }
 
-    /**
-     * @param $domain
-     * @throws Exception
-     */
-    protected function revertMXRecords($domain) {
+    private function revertMXRecords($domain) {
         $records = $this->getPAMXRecords($domain, 'in');
         foreach ($records as $record) {
             try {
@@ -1226,11 +1069,7 @@ class context extends \APS\ResourceBase
         }
     }
 
-    /**
-     * @param $domain
-     * @return bool
-     */
-    protected function replaceMXRecords($domain)
+    private function replaceMXRecords($domain)
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
@@ -1253,7 +1092,7 @@ class context extends \APS\ResourceBase
             ## Add SE MX records to domain collection
             if (count($SEMXs)) {
                 $this->logger->info(__FUNCTION__ . ": Creating new PA MX record resources");
-                $record = $this->createResourceByTypeId("http://parallels.com/aps/types/pa/dns/record/mx/1.0");
+                $record = \APS\TypeLibrary::newResourceByTypeId("http://parallels.com/aps/types/pa/dns/record/mx/1.0");
                 foreach ($SEMXs as $index => $SEMX) {
                     $this->logger->info(__FUNCTION__ . ": Setting up record: $SEMX -> {$domain->name}.");
                     $record->source      = $domain->name . ".";
@@ -1284,12 +1123,7 @@ class context extends \APS\ResourceBase
 
             $result = true;
         } catch (Exception $e) {
-            /** @see https://github.com/SpamExperts/aps2-addon/issues/42 */
-            if ($e instanceof \Rest\RestException && 'Plesk.ErrorHandling.dns.DuplicateDNSRecord' === $e->details->error) {
-                $this->report->add("Could not replace MX records for the domain '{$domain->name}'. It looks like the domain resource has some extra MX-record resources added by someone with higher permissions (most likely an admin) and this application can not manage these MX records in any way due to a lack of permissions. Please try to execute the following RQL query as admin - /aps/2/resources/{$domain->aps->id}/records?implementing(http://parallels.com/aps/types/pa/dns/record/mx/1.0) - to see if this indeed the case and, if yes, deleting the found resources followed by the Protect action should fix the domain state.", Report::WARNING);
-            } else {
-                $this->report->add("Could not replace MX records for domain '{$domain->name}'. [$e]", Report::WARNING);
-            }
+            $this->report->add("Could not replace MX records for domain '{$domain->name}'. [$e]", Report::WARNING);
         }
 
         $this->logger->info(__FUNCTION__ . ": stop");
@@ -1297,13 +1131,7 @@ class context extends \APS\ResourceBase
         return $result;
     }
 
-    /**
-     * @param bool $reseller
-     * @return APIClient|null
-     *
-     * @codeCoverageIgnore
-     */
-    protected function API($reseller = false)
+    private function API($reseller = false)
     {
         if (!$this->API || $reseller) {
             $API = new APIClient($this->service);
@@ -1312,17 +1140,10 @@ class context extends \APS\ResourceBase
             }
             $this->API = $API;
         }
-
         return $this->API;
     }
 
-    /**
-     * @param null $resource
-     * @return \APS\ControllerProxy
-     *
-     * @codeCoverageIgnore
-     */
-    protected function APSC($resource = null)
+    private function APSC($resource = null)
     {
         return $this->APSC ?: $this->APSC = \APS\Request::getController()->impersonate($resource ?: $this);
     }
@@ -1334,10 +1155,8 @@ class context extends \APS\ResourceBase
      * @param int $subscriptionId
      *
      * @return bool
-     *
-     * @throws Exception
      */
-    protected function subscriptionHasSEReources($subscriptionId)
+    private function subscriptionHasSEReources($subscriptionId)
     {
         $result = false;
 
