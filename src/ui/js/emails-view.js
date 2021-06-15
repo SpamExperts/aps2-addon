@@ -318,7 +318,6 @@ define([
                         button = this,
                         grid = registry.byId("emailGrid"),
                         items = grid.get("selectionArray");
-
                     common.SEA('emailProtect', { data: JSON.stringify(items), method: "PUT" }).then(function() {
                         common.fetchApsResources('emails').then(function(resources) {
                             SEData = getSEData(resources);

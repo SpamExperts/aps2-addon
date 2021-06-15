@@ -57,9 +57,9 @@ define([
           var common = {
             page: "apsPageContainer",
             types: {
-                context: "http://aps.spamexperts.com/app_old/context/2.0",
-                domain:  "http://aps.spamexperts.com/app_old/domain/1.0",
-                email:   "http://aps.spamexperts.com/app_old/email/1.0"
+                context: "http://aps.spamexperts.com/app/context/2.0",
+                domain:  "http://aps.spamexperts.com/app/domain/1.0",
+                email:   "http://aps.spamexperts.com/app/email/1.0"
             },
             fields: {
                 domain: "name",
@@ -170,13 +170,13 @@ define([
                 ")").then(function (seEmailUsers) {
             if (seEmailUsers[0] && seEmailUsers[0].aps.id) {
                 seEmailUserId = seEmailUsers[0].aps.id;
-                registry.byId("se_emailuser_login").set("disabled", false);
+                registry.byId("suLoginButton").set("disabled", false);
             }
         });
 
         this.byId("suLoginTile").set("buttons", [{
             id: "suLoginButton",
-            title: "Protect",
+            title: "Login",
             onClick: function() {
                         xhr("/aps/2/resources/" + seEmailUserId + "/controlPanelLoginLink",
                             { handleAs: "text" }).then(function (authticket) {

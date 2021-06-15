@@ -1,8 +1,8 @@
-<application packaged="2015-01-09T20:23:47" version="2.0" xmlns="http://aps-standard.org/ns/2">
+<application packaged="2020-11-10T17:36:13" version="2.0" xmlns="http://aps-standard.org/ns/2">
     <id>http://aps.spamexperts.com/app</id>
     <name>SpamExperts</name>
     <version>2.0</version>
-    <release>21</release>
+    <release>23</release>
     <homepage>http://www.spamexperts.com/</homepage>
 
     <vendor>
@@ -26,75 +26,81 @@
         </screenshot>
 
         <changelog>
-            <version version="2.0" release="1">
+            <version release="1" version="2.0">
                 <entry>SpamExperts 2.0 email protection system integration for PA completely rebuilt for APS2.0. First release!</entry>
             </version>
-            <version version="2.0" release="2">
+            <version release="2" version="2.0">
                 <entry>Added service user wizard, related changes to email user handling and domain owner checking/updating.</entry>
             </version>
-            <version version="2.0" release="3">
+            <version release="3" version="2.0">
                 <entry>Customer multi-subscription support, some bug fixes and minor improvements.</entry>
             </version>
-            <version version="2.0" release="4">
+            <version release="4" version="2.0">
                 <entry>Support for multiple subscriptions per customer with auto domain protection enabled. Handling instance MX record changes appropriately. Fixed some bugs and made some stability updates.</entry>
             </version>
-            <version version="2.0" release="5">
+            <version release="5" version="2.0">
                 <entry>HC and sub-admin support. Upgrade process defined and added environment checking.</entry>
             </version>
-            <version version="2.0" release="6">
+            <version release="6" version="2.0">
                 <entry>Domains and email which are protected under other subscription are not shown in current subscription.</entry>
                 <entry>Service user login as email user.</entry>
                 <entry>Updated SpamExperts logo.</entry>
             </version>
-            <version version="2.0" release="7">
+            <version release="7" version="2.0">
                 <entry>Fixed JavaScript error on the service sser login page.</entry>
             </version>
-            <version version="2.0" release="8">
+            <version release="8" version="2.0">
                 <entry>Fixed wrong condition of the Login button availability for service users on customer level.</entry>
                 <entry>Made provisioning of the most first domain in the subscription working.</entry>
             </version>
-            <version version="2.0" release="9">
+            <version release="9" version="2.0">
                 <entry>Implemented automatic protection of all resources when the application is added to the existing account.</entry>
                 <entry>Spampanel domain- and email user verification procedure has been optimized.</entry>
                 <entry>Resource ID lists are sent in PUT request body instead of query string to avoid too long URLs.</entry>
             </version>
-            <version version="2.0" release="10">
+            <version release="10" version="2.0">
                 <entry>Case-insensitive usernames comparison when checking user presence in the SpamFilter.</entry>
             </version>
-            <version version="2.0" release="11">
+            <version release="11" version="2.0">
                 <entry>Fixed failed provisioning procedure for accounts without some products.</entry>
             </version>
-            <version version="2.0" release="12">
+            <version release="12" version="2.0">
                 <entry>Resolved issue when retrieving context resources.</entry>
             </version>
-            <version version="2.0" release="14">
+            <version release="14" version="2.0">
                 <entry>Implemented the possibility to avoid all resource counters update hourly, flooding the API.</entry>
             </version>
-            <version version="2.0" release="15">
+            <version release="15" version="2.0">
                 <entry>Deleting one of account admins does not not cause unprotection on the bound subscription anymore.</entry>
                 <entry>Fixed issue with product availability flag - now it is possible to disable a product for provisioning even if it's enabled for underlying admin account.</entry>
             </version>
-            <version version="2.0" release="16">
+            <version release="16" version="2.0">
                 <entry>Fixed '500 Internal Server Error when provisioning a context resource' (https://github.com/SpamExperts/aps2-addon/issues/6)</entry>
                 <entry>Fixed 'Error: Only variables should be passed by reference' (https://github.com/SpamExperts/aps2-addon/issues/9)</entry>
             </version>
-            <version version="2.0" release="17">
+            <version release="17" version="2.0">
                 <entry>Fixed 'Some protected users not showing Protected in Odin' (https://github.com/SpamExperts/aps2-addon/issues/23)</entry>
                 <entry>Implemented 'Archiving not activated when Application Counter is increased as part of upgrade' (https://github.com/SpamExperts/aps2-addon/issues/14)</entry>
             </version>
-            <version version="2.0" release="18">
+            <version release="18" version="2.0">
                 <entry>Implemented the possibility to skip protection of "remote" domains (https://github.com/SpamExperts/aps2-addon/issues/25)</entry>
             </version>
-            <version version="2.0" release="19">
+            <version release="19" version="2.0">
                 <entry>Fixed the APS provisioning issue: Incoming and Archiving active when they should not be active (https://github.com/SpamExperts/aps2-addon/issues/33)</entry>
                 <entry>Some resource IDs made compatible with APS linter expectations (https://github.com/SpamExperts/aps2-addon/issues/31)</entry>
             </version>
-            <version version="2.0" release="20">
+            <version release="20" version="2.0">
                 <entry>Application sets incorrect usage values in OSA every night (https://github.com/SpamExperts/aps2-addon/issues/38)</entry>
             </version>
-            <version version="2.0" release="21">
+            <version release="21" version="2.0">
                 <entry>Adds a more detailed warning for the case. (https://github.com/SpamExperts/aps2-addon/issues/42)</entry>
                 <entry>Make all the domain checks executing on lower-cased domains. (https://github.com/SpamExperts/aps2-addon/issues/43)</entry>
+            </version>
+            <version release="22" version="2.0">
+                <entry>UX1 integration.</entry>
+            </version>
+            <version release="23" version="2.0">
+                <entry>CB Commerce 20.4 and 20.5 compatibillity</entry>
             </version>
         </changelog>
 
@@ -106,44 +112,50 @@
             <language>en</language>
         </languages>
 
-        <navigation id="ccp" label="SpamExperts">
+        <navigation id="ccp2" label="SpamExperts" spec="version=2.1">
             <var name="context" type-id="http://aps.spamexperts.com/app/context/2.0"/>
-            <plugs-to id="http://www.aps-standard.org/ui/service"/>
-            <item id="domains" label="Domains">
-                <view id="domains" label="Domains">
+            <plugs-to id="http://www.parallels.com/ccp/2"/>
+
+            <item id="domains-view" label="Domains">
+                <view id="domains-view" label="Domain List" src="ui/js/domains-view.js">
                 </view>
             </item>
-            <item id="emails" label="Email Users">
-                <view id="emails" label="Email Users">
+
+            <item id="emails-view" label="Email Users">
+                <view id="emails-view" label="Email List" src="ui/js/emails-view.js">
                 </view>
             </item>
-            <item id="operations" label="Operations">
-                <view id="operations" label="Operations">
+
+            <item id="operations-view" label="Operations">
+                <view id="operations-view" label="Operations" src="ui/js/operations-view.js">
                 </view>
             </item>
+
         </navigation>
 
         <navigation id="suwizard">
-            <view id="suwizard_new" label="New SE Email User">
+            <view id="add-user-service" label="SE Email Protection" src="ui/js/wizard/add-service-user.js">
                 <var name="context" type-id="http://aps.spamexperts.com/app/context/2.0"/>
-                <plugs-to id="http://www.aps-standard.org/ui/service/suwizard.new"/>
+                <plugs-to id="http://www.aps-standard.org/ui/service/suwizard.new/2"/>
+                <plugin-placeholder id="http://www.aps-standard.org/core/package#biz"/>
             </view>
-            <view id="suwizard_overview" label="SE Overview">
-                <plugs-to id="http://www.aps-standard.org/ui/service/suwizard.overview"/>
-            </view>
-            <view id="suservice_view" label="Settings">
-                <var name="context" type-id="http://aps.spamexperts.com/app/context/2.0"/>
-                <plugs-to id="http://www.aps-standard.org/ui/service/suservice.view"/>
+        </navigation>
+        <navigation id="activation-wizard" label="Service Activation">
+            <var collection="true" filter="select(user.userId)" name="endusers" required="true" type-id="http://aps.spamexperts.com/app/email/1.0"/>
+            <view id="service-activate" label="User Activation" src="ui/js/wizard/activate-user.js">
+                <plugs-to id="http://www.parallels.com/ccp-activation#wizard"/>
             </view>
         </navigation>
 
+
         <navigation id="mycp" label="SpamExperts">
             <var name="user" type-id="http://aps-standard.org/types/core/service-user/1.0"/>
-            <plugs-to id="http://www.aps-standard.org/ui/user"/>
-            <item id="emailops" label="Operations">
-                <view id="emailops" label="Operations"/>
-            </item>
+                <item id="email-operations-view" label="Operations">
+                    <view id="email-operations-view" label="Operations" src="ui/js/email-operations-view.js"/>
+                </item>
+            <plugs-to id="http://www.aps-standard.org/ui/user/2"/>
         </navigation>
+
     </presentation>
 
     <license-agreement must-accept="true">

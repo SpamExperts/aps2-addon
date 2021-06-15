@@ -322,6 +322,7 @@ define([
                         common.requestError(e);
                         button.cancel();
                     });
+                    registry.byId("domainsGrid").refresh();
                 });
 
                 self.byId("domainsUnprotect").set("onClick", function() {
@@ -341,6 +342,7 @@ define([
                         common.requestError(e);
                         button.cancel();
                     });
+                    registry.byId("domainsGrid").refresh();
                 });
 
                 self.byId("domainsCheck").set("onClick", function() {
@@ -360,6 +362,7 @@ define([
                         common.requestError(e);
                         button.cancel();
                     });
+                    registry.byId("domainsGrid").refresh();
                 });
 
                 self.byId("domainsResetBtn").set("onClick", function() {

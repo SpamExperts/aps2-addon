@@ -205,7 +205,7 @@ define([
                 }
             };
 
-            this.byId("protectTile").set("buttons", [{
+            this.byId("protectTile").set("checkbox", [{
                 id: "seInstallBtn",
                 title: "Protect",
                 onClick: function() {

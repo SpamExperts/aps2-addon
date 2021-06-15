@@ -1,27 +1,25 @@
 define([
     "dojo/_base/declare",
     "dojo/when",
-
     "aps/_View"
-], function(
+], function (
     declare,
     when,
-
     _View
 ) {
 
     return declare(_View, {
-        init: function() {
+        init: function () {
 
             return ["aps/PageContainer", [
-                ["aps/FieldSet", { id: "general", title: "General" }, [
-                    ["aps/Output", { id: "email_user", label: "Email User" }],
-                    ["aps/CheckBox", { id: "protection",   label: "Protection", value: "protection", disabled: false }]
+                ["aps/FieldSet", {id: "general", title: "General"}, [
+                    ["aps/Output", {id: "email_user", label: "Email User"}],
+                    ["aps/CheckBox", {id: "protection", label: "Protection", value: "protection", disabled: false}]
                 ]]
             ]];
         }, // End of Init function
 
-        onContext: function(context) {
+        onContext: function (context) {
 
             console.log("ACTIVATE-USER");
 
@@ -33,10 +31,9 @@ define([
 
         }, // End of onContext
 
-        onNext: function() {
+        onNext: function () {
 
-            aps.apsc.next({
-            });
+            aps.apsc.next({});
         } // End of onNext
 
     }); // End of Declare
