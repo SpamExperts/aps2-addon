@@ -9,7 +9,7 @@ define([
     "aps/TextBox",
     "aps/ResourceStore",
     "aps/Memory",
-    "aps/_View",
+    "aps/_View"
 
 ], function (declare,
              lang,
@@ -21,7 +21,7 @@ define([
              TextBox,
              Store,
              Memory,
-             _View,
+             _View
 ) {
     return declare(_View, {
         init: function () {
@@ -38,7 +38,7 @@ define([
                     id: "suDescriptionLabel",
                     label: "Description",        		
 		            value: "With this service you are in a position to configure protection for the user. Protection configuration is available form the SpamExperts left side menu."
-                }],
+                }]
 
             ]];
         }, // End of Init

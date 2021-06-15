@@ -43,7 +43,6 @@ define([
                             ["aps/TextBox", {
                                 id: "emailInput",
                                 placeHolder: 'Search for an email',
-                                size: 40,
                                 style: "margin-top: 5px; float: left; margin-right: 10px"
 
                             }
@@ -218,7 +217,7 @@ define([
 
                 if (excludedDomains.length) {
                     for (var i = 0; i < excludedDomains.length; i++) {
-                        likes.push("like(" + field + ",*@" + excludedDomains[i] + ")");
+                        likes.push("like(" + field + ",%2A@" + excludedDomains[i] + ")");
                     }
                 }
 
@@ -288,7 +287,7 @@ define([
                                 var button = new Button({
                                     label: "Login",
                                     autoBusy: true,
-                                    iconName: "/pem/images/panelset/enabled/login.gif",
+                                    iconClass: "/pem/images/panelset/enabled/login.gif",
                                     disabled: (typeof SEData[name] == 'undefined' || (typeof login != 'undefined' && ! login.limit)),
                                     onClick: function() {
                                         common.SEA("getAuthTicket", { query: { username: name }, handleAs: "text" }).then(function(authticket) {

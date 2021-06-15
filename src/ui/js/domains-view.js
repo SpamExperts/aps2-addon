@@ -92,7 +92,7 @@ define([
 
         }, // End of Init
         onContext: function() {
-
+window.registry = registry;
             var self = this;
 
             var common = {
@@ -211,9 +211,6 @@ define([
             field = common.fields.domain;
             Type = 'Domain';
             target = "/domains";
-            entriesFilter = function () {
-                return (excludedDomains.length ? "?out(" + field + ",(" + excludedDomains.join(",") + "))" : "");
-            };
 
             console.log(common);
 
@@ -249,7 +246,7 @@ define([
                         return SEData;
                     },
                     store = new ResourceStore({
-                        target: "/aps/2/resources/" + account.aps.id + target + entriesFilter(),
+                        target: "/aps/2/resources/" + account.aps.id,
                         idProperty: "aps.id"
                     }),
                     SEData = getSEData(resources),
