@@ -1,0 +1,25 @@
+{
+  "name": "spamexperts/aps",
+  "description": "Application for integrating SpamExperts services with POA/APS.",
+  "keywords": ["aps", "spamexperts", "poa", "automation", "integration"],
+  "homepage": "https://github.com/SpamExperts/aps",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "SpamExperts",
+      "email": "info@spamexperts.com",
+      "homepage": "https://www.spamexperts.com/"
+    }
+  ],
+  "require": {
+    "guzzle/guzzle": "3.*",
+    "monolog/monolog": "1.10.*"
+  },
+  "autoload": {
+    "files": ["APIClient.php", "Logger.php", "Report.php", "App.php"]
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.7.27"
+  }
+}
