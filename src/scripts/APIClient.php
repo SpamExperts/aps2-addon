@@ -210,7 +210,7 @@ class APIClient extends Guzzle\Http\Client
 
     public function addEmailUser($email)
     {
-        $toLowerEmail = strtolower($email);
+	$toLowerEmail = strtolower($email);
         $this->logger->debug(__FUNCTION__ . ": " . "Email user addition request");
 
         if (strpos($toLowerEmail, '@') === false) {

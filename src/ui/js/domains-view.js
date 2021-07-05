@@ -92,7 +92,6 @@ define([
 
         }, // End of Init
         onContext: function() {
-window.registry = registry;
             var self = this;
 
             var common = {
@@ -211,14 +210,15 @@ window.registry = registry;
             field = common.fields.domain;
             Type = 'Domain';
             target = "/domains";
-
-            console.log(common);
+//            entriesFilter = function () {
+//                return (excludedDomains.length ? "?out(" + field + ",(" + excludedDomains.join(",") + "))" : "");
+//            };
 
             common.SEA('account').then(function (account) {
                 common.fetchApsResources('domains').then(function (resources) {
                     xhr("/aps/2/resources?implementing(" + common.types.domain +
-                        "),not(linkedWith(" + aps.context.vars.context.aps.id +
-                        "))").then(function (excludedResources) {
+                        "),linkedWith(" + aps.context.vars.context.aps.id +
+                        ")").then(function (excludedResources) {
                         if (Object.prototype.toString.call(excludedResources) === '[object Array]') {
                             for (var i = 0; i < excludedResources.length; i++) {
                                 if (excludedResources[i][common.fields.domain]) {
@@ -246,9 +246,11 @@ window.registry = registry;
                         return SEData;
                     },
                     store = new ResourceStore({
-                        target: "/aps/2/resources/" + account.aps.id,
+                        //target: "/aps/2/resources/" + account.aps.id + target + entriesFilter(),
+                        target: "/aps/2/resources/" + account.aps.id + target,
                         idProperty: "aps.id"
                     }),
+
                     SEData = getSEData(resources),
                     login = aps.context.vars.context['cp_' + 'domains'],
                     layoutGrid = [
@@ -298,7 +300,6 @@ window.registry = registry;
                         }
                     ];
 
-                console.log(store);
                 self.byId("domainsGrid").set("store", store);
                 self.byId("domainsGrid").set("columns", layoutGrid);
 
