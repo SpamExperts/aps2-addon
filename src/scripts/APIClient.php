@@ -210,13 +210,14 @@ class APIClient extends Guzzle\Http\Client
 
     public function addEmailUser($email)
     {
+        $toLowerEmail = strtolower($email);
         $this->logger->debug(__FUNCTION__ . ": " . "Email user addition request");
 
-        if (strpos($email, '@') === false) {
+        if (strpos($toLowerEmail, '@') === false) {
             return false;
         }
 
-        list($username, $domain) = explode('@', $email);
+        list($username, $domain) = explode('@', $toLowerEmail);
         $password = substr(str_shuffle(md5(microtime())), 0, 10);
 
         try {
