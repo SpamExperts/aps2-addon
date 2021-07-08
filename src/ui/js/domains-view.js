@@ -370,7 +370,8 @@ define([
 
                 self.byId("domainsSearchBtn").set("onClick", function() {
                     when(store.query('like(' + field + ',*' + self.byId("domainsInput").get("value") + '*)'), function(data) {
-                        self.byId("domainsGrid").set("store", new Memory({ data: data }));
+                        var store = new Memory({ data: data, idProperty: "aps.id" });
+                        self.byId("domainsGrid").set("store", store);
                         }
                     );
                 });

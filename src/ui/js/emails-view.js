@@ -375,7 +375,7 @@ define([
 
                 self.byId("emailSearchBtn").set("onClick", function() {
                     when(store.query('like(' + field + ',*' + self.byId("emailInput").get("value") + '*)'), function(data) {
-                            self.byId("emailGrid").set("store", new Memory({ data: data }));
+                            self.byId("emailGrid").set("store", new Memory({ data: data, idProperty: "aps.id" }));
                         }
                     );
                 });
