@@ -22,35 +22,30 @@ define([
              Store,
              Memory,
              _View
-             ) {
+) {
     return declare(_View, {
         init: function () {
-
-            // var email = aps.context.params.user.login;
-
-            var emailUser = getStateful({
+                var emailUser = getStateful({
                 aps: { type: "http://aps.spamexperts.com/app/email/1.0"},
                 domain: { aps: { id: ""}},
                 name: 'temp',
-                status: false
+                status: true
             });
 
-
             /* Define and return widgets */
-            return ["aps/FieldSet", { id: "general", title: "General"}, [
-                ["aps/TextBox", {
-                    id: "suEmailInput",
-                    label: "Email Address",
-                    required: true,
-                    placeHolder: "Enter an email.",
-                    missingMessage: "Sorry, the field is empty"
-                }],
-                ["aps/CheckBox", { id: "protection",   label:  "Protection", value: "protection", disabled: false }]
+            return ["aps/FieldSet", { id: "protection", title: "SE Protection"}, [
+                ["aps/Output", {
+                    id: "suDescriptionLabel",
+                    label: "Description",        		
+		            value: "With this service you are in a position to configure protection for the user. Protection configuration is available form the SpamExperts left side menu."
+                }]
+
             ]];
         }, // End of Init
 
         /* Create the handler for the Next navigation button */
         onNext: function () {
+
             var page = this.byId("apsPageContainer");
 
             page.get("messageList").removeAll();
@@ -65,8 +60,7 @@ define([
         }, // End of onNext
 
         onContext: function () {
-
-            var email = aps.context.vars.context.adminEmail;
+	    var email = aps.context.vars.context.adminEmail;
 
             /* Declare the data source */
             this.offerStore = new Store({
@@ -98,7 +92,7 @@ define([
                 status: false
             });
 
-            this.byId("protection").set("checked", emailUser.status);
+            //this.byId("protection").set("checked", emailUser.status);
 
             var self = this;
             self.offerStore.query().then(function (offers) {

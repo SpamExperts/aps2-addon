@@ -73,7 +73,7 @@ class APIClient extends Guzzle\Http\Client
 
         $this->logger->debug(__METHOD__ . ": Result: " . var_export($result, true)
             . " Responses: " . var_export($rawResponses, true));
-
+        
         return $result;
     }
 
@@ -119,8 +119,7 @@ class APIClient extends Guzzle\Http\Client
     {
         $this->logger->debug(__FUNCTION__ . ": " . "Domain addition request");
         try {
-            $response = $this->get(
-                "/api/domain/setproducts/domain/$domain"  .
+            $response = $this->get("/api/domain/setproducts/domain/$domain" .
                 (isset($products["incoming"])  ? "/incoming/"  . $products["incoming"]  : "") .
                 (isset($products["outgoing"])  ? "/outgoing/"  . $products["outgoing"]  : "") .
                 (isset($products["archiving"]) ? "/archiving/" . $products["archiving"] : "")
@@ -211,13 +210,14 @@ class APIClient extends Guzzle\Http\Client
 
     public function addEmailUser($email)
     {
+	$toLowerEmail = strtolower($email);
         $this->logger->debug(__FUNCTION__ . ": " . "Email user addition request");
 
-        if (strpos($email, '@') === false) {
+        if (strpos($toLowerEmail, '@') === false) {
             return false;
         }
 
-        list($username, $domain) = explode('@', $email);
+        list($username, $domain) = explode('@', $toLowerEmail);
         $password = substr(str_shuffle(md5(microtime())), 0, 10);
 
         try {
@@ -263,7 +263,7 @@ class APIClient extends Guzzle\Http\Client
             $response = $response->send()->getBody(true);
             if (!empty($response)) {
                 $userData = json_decode($response, true);
-                $result = !empty($userData['username'])
+                $result = !empty($userData['username']) 
                     && strtolower($userData['username']) == strtolower($email);
             } else {
                 $result = false;
@@ -341,6 +341,11 @@ class APIClient extends Guzzle\Http\Client
         return $result;
     }
 
+    /**
+     * @return bool|int
+     *
+     * @codeCoverageIgnore
+     */
     public function getIncomingBandwidth()
     {
         $this->logger->debug(__FUNCTION__ . ": " . "Get incoming bandwidth request");
@@ -423,6 +428,11 @@ class APIClient extends Guzzle\Http\Client
         return $result;
     }
 
+    /**
+     * @return bool|int
+     *
+     * @codeCoverageIgnore
+     */
     public function getOutgoingBandwidth()
     {
         $this->logger->debug(__FUNCTION__ . ": " . "Get outgoing bandwidth request");
@@ -485,6 +495,11 @@ class APIClient extends Guzzle\Http\Client
         return $result;
     }
 
+    /**
+     * @return bool|int
+     *
+     * @codeCoverageIgnore
+     */
     public function getArchivingAccounts()
     {
         $this->logger->debug(__FUNCTION__ . ": " . "Get archiving accounts request");
@@ -505,6 +520,11 @@ class APIClient extends Guzzle\Http\Client
         return $result;
     }
 
+    /**
+     * @return bool|int
+     *
+     * @codeCoverageIgnore
+     */
     public function getArchivingSpace()
     {
         $this->logger->debug(__FUNCTION__ . ": " . "Get archiving space request");
@@ -525,6 +545,11 @@ class APIClient extends Guzzle\Http\Client
         return $result;
     }
 
+    /**
+     * @return bool|int
+     *
+     * @codeCoverageIgnore
+     */
     public function getArchivingPeriod()
     {
         $this->logger->debug(__FUNCTION__ . ": " . "Get archiving period request");
@@ -545,6 +570,12 @@ class APIClient extends Guzzle\Http\Client
         return $result;
     }
 
+    /**
+     * @param $domain
+     * @param $quota
+     *
+     * @codeCoverageIgnore
+     */
     public function setArchivingQuotaSoft($domain, $quota)
     {
         $this->logger->debug(__FUNCTION__ . ": " . "Set soft archiving quota request");
@@ -560,6 +591,12 @@ class APIClient extends Guzzle\Http\Client
         $this->logger->debug(__FUNCTION__ . ": Response: " . var_export($response, true));
     }
 
+    /**
+     * @param $domain
+     * @param $quota
+     *
+     * @codeCoverageIgnore
+     */
     public function setArchivingQuotaHard($domain, $quota)
     {
         $this->logger->debug(__FUNCTION__ . ": " . "Set soft archiving quota request");
@@ -585,10 +622,9 @@ class APIClient extends Guzzle\Http\Client
         try {
             $response = $this->get("/api/reseller/add/username/$username/password/$password/email/$email/domainslimit/$domainLimit/api_usage/1");
             $response = $response->send()->getBody(true);
-            $result =
-                stripos($response, 'already') !== false ?
-                $this->updateReseller($username, $password, $email, $domainLimit) :
-                stripos($response, 'success') !== false;
+            $result = stripos($response, 'already') !== false
+                ? $this->updateReseller($username, $password, $email, $domainLimit)
+                : stripos($response, 'success') !== false;
         } catch (Exception $e) {
             $response = "Error: " . $e->getMessage() . " | Code: " . $e->getCode();
             $this->report->add($response, Report::ERROR);
@@ -673,8 +709,7 @@ class APIClient extends Guzzle\Http\Client
         $this->logger->debug(__FUNCTION__ . ": " . "Set reseller products request");
 
         try {
-            $response = $this->get(
-                "/api/reseller/setproducts/username/$username" .
+            $response = $this->get("/api/reseller/setproducts/username/$username" .
                 (isset($settings['incoming'])      ? "/incoming/{$settings['incoming']}"          : '') .
                 (isset($settings['outgoing'])      ? "/outgoing/{$settings['outgoing']}"          : '') .
                 (isset($settings['archiving'])     ? "/archiving/{$settings['archiving']}"        : '') .
@@ -716,6 +751,8 @@ class APIClient extends Guzzle\Http\Client
     public function assertOwner($domain, $owner)
     {
         $this->logger->debug(__FUNCTION__ . ": " . "Verify and set correct owner");
+
+        $domain = $this->toLowercase($domain);
 
         try {
             $currentOwner = $this->getOwner($domain);
@@ -812,5 +849,10 @@ class APIClient extends Guzzle\Http\Client
         $this->logger->debug(__FUNCTION__ . ": Result: " . var_export($result, true) . " Response: " . var_export($response, true));
 
         return $result;
+    }
+
+    public function toLowercase($string)
+    {
+        return function_exists('mb_strtolower') ? mb_strtolower($string, 'UTF-8') : strtolower($string);
     }
 }

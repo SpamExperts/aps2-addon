@@ -92,7 +92,6 @@ define([
 
         }, // End of Init
         onContext: function() {
-
             var self = this;
 
             var common = {
@@ -211,17 +210,15 @@ define([
             field = common.fields.domain;
             Type = 'Domain';
             target = "/domains";
-            entriesFilter = function () {
-                return (excludedDomains.length ? "?out(" + field + ",(" + excludedDomains.join(",") + "))" : "");
-            };
-
-            console.log(common);
+//            entriesFilter = function () {
+//                return (excludedDomains.length ? "?out(" + field + ",(" + excludedDomains.join(",") + "))" : "");
+//            };
 
             common.SEA('account').then(function (account) {
                 common.fetchApsResources('domains').then(function (resources) {
                     xhr("/aps/2/resources?implementing(" + common.types.domain +
-                        "),not(linkedWith(" + aps.context.vars.context.aps.id +
-                        "))").then(function (excludedResources) {
+                        "),linkedWith(" + aps.context.vars.context.aps.id +
+                        ")").then(function (excludedResources) {
                         if (Object.prototype.toString.call(excludedResources) === '[object Array]') {
                             for (var i = 0; i < excludedResources.length; i++) {
                                 if (excludedResources[i][common.fields.domain]) {
@@ -249,9 +246,11 @@ define([
                         return SEData;
                     },
                     store = new ResourceStore({
-                        target: "/aps/2/resources/" + account.aps.id + target + entriesFilter(),
+                        //target: "/aps/2/resources/" + account.aps.id + target + entriesFilter(),
+                        target: "/aps/2/resources/" + account.aps.id + target,
                         idProperty: "aps.id"
                     }),
+
                     SEData = getSEData(resources),
                     login = aps.context.vars.context['cp_' + 'domains'],
                     layoutGrid = [
@@ -301,7 +300,6 @@ define([
                         }
                     ];
 
-                console.log(store);
                 self.byId("domainsGrid").set("store", store);
                 self.byId("domainsGrid").set("columns", layoutGrid);
 
@@ -322,6 +320,7 @@ define([
                         common.requestError(e);
                         button.cancel();
                     });
+                    registry.byId("domainsGrid").refresh();
                 });
 
                 self.byId("domainsUnprotect").set("onClick", function() {
@@ -341,6 +340,7 @@ define([
                         common.requestError(e);
                         button.cancel();
                     });
+                    registry.byId("domainsGrid").refresh();
                 });
 
                 self.byId("domainsCheck").set("onClick", function() {
@@ -360,6 +360,7 @@ define([
                         common.requestError(e);
                         button.cancel();
                     });
+                    registry.byId("domainsGrid").refresh();
                 });
 
                 self.byId("domainsResetBtn").set("onClick", function() {
@@ -369,7 +370,8 @@ define([
 
                 self.byId("domainsSearchBtn").set("onClick", function() {
                     when(store.query('like(' + field + ',*' + self.byId("domainsInput").get("value") + '*)'), function(data) {
-                        self.byId("domainsGrid").set("store", new Memory({ data: data }));
+                        var store = new Memory({ data: data, idProperty: "aps.id" });
+                        self.byId("domainsGrid").set("store", store);
                         }
                     );
                 });

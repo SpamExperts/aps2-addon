@@ -50,7 +50,7 @@ define([
                         [
                             ["aps/Container", {},
                                 [
-                                    ["aps/FieldSet", [
+                                   ["aps/FieldSet", [
                                         ["aps/Output", {
                                             content: "Protect all resources."
                                         }]
@@ -207,7 +207,7 @@ define([
 
             this.byId("protectTile").set("buttons", [{
                 id: "seInstallBtn",
-                title: "Protect",
+                title: "Protect All",
                 onClick: function() {
 
                     when(xhr("/aps/2/resources/" + aps.context.vars.context.aps.id + '/protectAll', {
