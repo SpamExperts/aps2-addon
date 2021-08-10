@@ -29,7 +29,3 @@ Here is a more detailed explanation of the options you can use for the build:
 --package => Build an APS package; you can optionally specify a name (default is 'SpamExperts-2.0-X.app.zip') Usage: --package; --package='my_package.app.zip'
 --dev     => Development build (keeps some files; ignores --package) Usage: --dev
 ```
-
-## Stable Release
-
-You can find the latest stable release in the [App Catalog](https://dev.apsstandard.org/apps/).
