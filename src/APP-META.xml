@@ -1,4 +1,4 @@
-<application packaged="2021-06-11T11:26:16" version="2.0" xmlns="http://aps-standard.org/ns/2">
+<application packaged="2022-08-17T18:00:00" version="2.0" xmlns="http://aps-standard.org/ns/2">
         
     <id>http://aps.spamexperts.com/app</id>
         
@@ -6,7 +6,7 @@
         
     <version>2.0</version>
         
-    <release>23</release>
+    <release>24</release>
         
     <homepage>http://www.spamexperts.com/</homepage>
         
@@ -199,7 +199,13 @@
                 <entry>CB Commerce 20.5 improvements and bug fixes</entry>
                             
             </version>
-                    
+
+            <version release="24" version="2.0">
+
+                <entry>Revert MX records changes</entry>
+
+            </version>
+
         </changelog>
                 
         <categories>
