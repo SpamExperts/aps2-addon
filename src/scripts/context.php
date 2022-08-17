@@ -269,14 +269,14 @@ class context extends \APS\ResourceBase
             ## Subscribe to relevant events
             $this->logger->info(__FUNCTION__ . ": Subscribing to events");
 
-            $onDomainAvailable = new \APS\EventSubscription(\APS\EventSubscription::Available, "onDomainAvailable");
-            $onServiceChanged = new \APS\EventSubscription(\APS\EventSubscription::Changed, "onServiceChanged");
+            $onDomainAvailable          = new \APS\EventSubscription(\APS\EventSubscription::Available,                "onDomainAvailable");
+            $onServiceChanged           = new \APS\EventSubscription(\APS\EventSubscription::Changed,                  "onServiceChanged");
             $onSubscriptionLimitChanged = new \APS\EventSubscription(\APS\EventSubscription::SubscriptionLimitChanged, "onSubscriptionLimitChanged");
 
             ## Event type string or Resource to subscribe to
-            $onDomainAvailable->source = (object)array('type' => "http://parallels.com/aps/types/pa/dns/zone/1.0");
-            $onServiceChanged->source = (object)array('id' => $this->service->aps->id);
-            $onSubscriptionLimitChanged->source = (object)array('id' => $this->subscription->aps->id);
+            $onDomainAvailable->source          = (object) array('type' => "http://parallels.com/aps/types/pa/dns/zone/1.0");
+            $onServiceChanged->source           = (object) array('id'   => $this->service->aps->id);
+            $onSubscriptionLimitChanged->source = (object) array('id'   => $this->subscription->aps->id);
 
             ## Subscribe to events on this account
             $this->APSC()->subscribe($this, $onDomainAvailable);
@@ -364,7 +364,7 @@ class context extends \APS\ResourceBase
      *
      * @codeCoverageIgnore
      */
-    public function configure($context = null/** @var $context context */)
+    public function configure($context = null /** @var $context context */)
     {
         $this->logger->info(__FUNCTION__ . ": start");
 
@@ -422,7 +422,7 @@ class context extends \APS\ResourceBase
          * Here the 1st scenario is being checked
          */
         $subscriptionIdsMatch = false;
-        $ignoreRemoteDomains = !!$this->service->ignoreRemoteDomains;
+        $ignoreRemoteDomains = !! $this->service->ignoreRemoteDomains;
         try {
             $domainHosting = $domain->hosting;
             if (isset($domainHosting) && isset($domainHosting->aps->id)) {
@@ -454,7 +454,7 @@ class context extends \APS\ResourceBase
                  *
                  * @see https://github.com/SpamExperts/aps2-addon/issues/25
                  */
-                if ($ignoreRemoteDomains && !$this->subscriptionHasSEReources($domainHosting->subscriptionId)) {
+                if ($ignoreRemoteDomains && ! $this->subscriptionHasSEReources($domainHosting->subscriptionId)) {
                     $this->logger->info(__METHOD__ . ": Ignoring '{$domain->name}' as the subscription it belongs "
                         . "does not have SE resources but it is required according to current settings "
                         . "(Ignore 'remote' domains is enabled)");
@@ -555,7 +555,7 @@ class context extends \APS\ResourceBase
             $products[$product] = isset($this->{$product}->limit) ? (0 != $this->{$product}->limit ? 1 : 0) : 1;
         }
 
-        $PL = array(1 => 'standard', 2 => 'premium');
+        $PL = array( 1 => 'standard', 2 => 'premium' );
         $products['private_label'] =
             isset($this->private_label->limit, $PL[$this->private_label->limit])
                 ? $PL[$this->private_label->limit]
@@ -670,6 +670,7 @@ class context extends \APS\ResourceBase
         $this->unprotectResources($this->getResourcesFromIDs(json_decode(rawurldecode($IDs))));
     }
 
+
     ### Other actions
 
 
@@ -708,7 +709,6 @@ class context extends \APS\ResourceBase
     }
 
 ## Unprotect all domain and email resources
-
     /**
      * @verb(GET)
      * @path("/unprotectAll")
@@ -721,7 +721,6 @@ class context extends \APS\ResourceBase
     }
 
     ## Update reseller container
-
     /**
      * @verb(GET)
      * @path("/refreshContainer")
@@ -763,7 +762,7 @@ class context extends \APS\ResourceBase
 
         $this->logger->info(__FUNCTION__ . ": stop");
 
-        return $ticket;
+        return  $ticket;
     }
 
     /**
@@ -1086,9 +1085,8 @@ class context extends \APS\ResourceBase
     protected function getAssocArray($items, $property)
     {
         return array_reduce($items, function ($items, $item) use ($property) {
-            $items[$item->{$property}] = $item;
-            return $items;
-        }, array());
+                $items[$item->{$property}] = $item; return $items;
+            }, array());
     }
 
 
@@ -1108,14 +1106,14 @@ class context extends \APS\ResourceBase
             $products[$product] = (int)(!isset($this->{$product}->limit) ?: !!$this->{$product}->limit);
         }
 
-        $PL = array(null => 'none', -1 => 'none', 0 => 'none', 1 => 'standard', 2 => 'premium');
+        $PL = array( null => 'none', -1 => 'none', 0 => 'none', 1 => 'standard', 2 => 'premium' );
         $products['private_label'] = $PL[isset($this->private_label->limit) ? $this->private_label->limit : null];
 
         $this->logger->info(__FUNCTION__ . ": Creating SE account");
         $domainLimit = $this->getLimit("http://aps.spamexperts.com/app/domain/1.0");
         $domainLimit = isset($domainLimit) ? $domainLimit : 0;
         $result = $this->API()->addReseller($this->username, $this->password, $this->adminEmail, $domainLimit) &&
-            $this->API()->setResellerProducts($this->username, $products);
+                  $this->API()->setResellerProducts($this->username, $products);
 
         $this->logger->info(__FUNCTION__ . ": stop");
 
@@ -1160,10 +1158,13 @@ class context extends \APS\ResourceBase
      */
     protected function getServiceMXRecords()
     {
-        $mx = array(($this->service->mx1) ? $this->service->mx1 : null,
-            ($this->service->mx2) ? $this->service->mx2 : null,
-            ($this->service->mx3) ? $this->service->mx3 : null,
-            ($this->service->mx4) ? $this->service->mx4 : null);
+        $mx = array();
+
+        for ($i = 1; $i <= 4; $i++) {
+            if (isset($this->service->{"mx$i"})) {
+                $mx[] = $this->service->{"mx$i"} . ".";
+            }
+        }
 
         return $mx;
     }
@@ -1212,8 +1213,7 @@ class context extends \APS\ResourceBase
      * @param $domain
      * @throws Exception
      */
-    protected function revertMXRecords($domain)
-    {
+    protected function revertMXRecords($domain) {
         $records = $this->getPAMXRecords($domain, 'in');
         foreach ($records as $record) {
             try {
@@ -1241,57 +1241,44 @@ class context extends \APS\ResourceBase
             $pa_records = $this->getPAMXRecords($domain);
 
             ## Avoid potential conflicts from existing SE records
-            $this->mx = $this->getServiceMXRecords();
-            $SEMXs = [];
-            foreach ($this->mx as $value) {
-                if ($value != null) {
-                    $SEMXs[] = $value;
+            $SEMXs = $this->mx;
+            foreach ($pa_records as $pa_index => $pa_record) {
+                if (($se_index = array_search($pa_record->exchange, $SEMXs)) !== false) {
+                    unset($pa_records[$pa_index]);
+                    unset($SEMXs[$se_index]);
                 }
             }
 
-            $this->logger->info("111 MX LIST: ", $SEMXs);
-         
-            if (!empty($SEMXs)) {
-                foreach ($pa_records as $pa_index => $pa_record) {
-                    if (($se_index = array_search($pa_record->exchange, $SEMXs)) !== false) {
-                        unset($pa_records[$pa_index]);
-                        unset($SEMXs[$se_index]);
-                    }
+            ## Add SE MX records to domain collection
+            if (count($SEMXs)) {
+                $this->logger->info(__FUNCTION__ . ": Creating new PA MX record resources");
+                $record = $this->createResourceByTypeId("http://parallels.com/aps/types/pa/dns/record/mx/1.0");
+                foreach ($SEMXs as $index => $SEMX) {
+                    $this->logger->info(__FUNCTION__ . ": Setting up record: $SEMX -> {$domain->name}.");
+                    $record->source      = $domain->name . ".";
+                    $record->exchange    = $SEMX;
+                    $record->RRState     = 'active';
+                    $record->priority    = 10*$index + 10;
+                    $record->TTL         = 3600;
+                    $record->recordId    = $index;
+
+                    $this->logger->info(__FUNCTION__ . ": Linking new record to domain records collection");
+                    $this->APSC()->linkResource($domain, 'records', $record);
                 }
 
-                ## Add SE MX records to domain collection
-                if (count($SEMXs)) {
-                    $this->logger->info(__FUNCTION__ . ": Creating new PA MX record resources");
-                    $record = $this->createResourceByTypeId("http://parallels.com/aps/types/pa/dns/record/mx/1.0");
-                    foreach ($SEMXs as $index => $SEMX) {
-                        $this->logger->info(__FUNCTION__ . ": Setting up record: $SEMX -> {$domain->name}.");
-                        $record->source = $domain->name . ".";
-                        $record->exchange = $SEMX;
-                        $record->RRState = 'active';
-                        $record->priority = 10 * $index + 10;
-                        $record->TTL = 3600;
-                        $record->recordId = $index;
+                if (count($pa_records)) {
+                    $this->logger->info(__FUNCTION__ . ": Replacing existing PA MX RRs with the first created SE MX RR");
+                    $SEMX = array_pop($SEMXs);
 
-                        $this->logger->info(__FUNCTION__ . ": Linking new record to domain records collection");
-                        $this->APSC()->linkResource($domain, 'records', $record);
-                    }
+                    $resources = $this->APSC()->getResources(
+                        "and(implementing(http://parallels.com/aps/types/pa/dns/record/mx/1.0),like(exchange,{$SEMX}))", "/aps/2/resources/{$domain->aps->id}/records"
+                    );
 
-                    if (count($pa_records)) {
-                        $this->logger->info(__FUNCTION__ . ": Replacing existing PA MX RRs with the first created SE MX RR");
-                        $SEMX = array_pop($SEMXs);
-
-                        $resources = $this->APSC()->getResources(
-                            "and(implementing(http://parallels.com/aps/types/pa/dns/record/mx/1.0),like(exchange,{$SEMX}))", "/aps/2/resources/{$domain->aps->id}/records"
-                        );
-
-                        $record = array_pop($resources);
-                        foreach ($pa_records as $pa_record) {
-                            $this->APSC()->linkResource($record, 'replaces', $pa_record);
-                        }
+                    $record = array_pop($resources);
+                    foreach ($pa_records as $pa_record) {
+                        $this->APSC()->linkResource($record, 'replaces', $pa_record);
                     }
                 }
-            } else {
-                $this->logger->info(__FUNCTION__ . ": MX records are not set in global settings");
             }
 
             $result = true;
