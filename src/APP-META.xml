@@ -6,7 +6,7 @@
         
     <version>2.0</version>
         
-    <release>24</release>
+    <release>25</release>
         
     <homepage>http://www.spamexperts.com/</homepage>
         
@@ -203,6 +203,12 @@
             <version release="24" version="2.0">
 
                 <entry>Revert MX records changes</entry>
+
+            </version>
+
+            <version release="25" version="2.0">
+
+                <entry>Build the latest version </entry>
 
             </version>
 
