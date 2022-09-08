@@ -1165,6 +1165,8 @@ class context extends \APS\ResourceBase
             ($this->service->mx3) ? $this->service->mx3 : null,
             ($this->service->mx4) ? $this->service->mx4 : null);
 
+        $this->logger->info(__FUNCTION__ . ": :1: getServiceMXRecords >>>>> {$mx}");
+
         return $mx;
     }
 
@@ -1177,21 +1179,31 @@ class context extends \APS\ResourceBase
      */
     protected function getPAMXRecords($domain, $io = '', $asExchangeArray = false)
     {
+        $this->logger->info(__FUNCTION__ . ": :2: getPAMXRecords >>>>> domain: {$domain} | io: {$io} | asExchangeArray: {$asExchangeArray}");
+
         $rql = "and(implementing(http://parallels.com/aps/types/pa/dns/record/mx/1.0),";
         if ($io && is_array($this->mx)) {
             // Get only SE records or except SE records
             $SEMXs = join(',', $this->mx);
             $rql .= "$io(exchange,($SEMXs)),";
         }
+        $this->logger->info(__FUNCTION__ . ": :3: getPAMXRecords >>>>> SEMXs: {$SEMXs}");
 
         $rql .= "sort(+priority))";
 
+        $this->logger->info(__FUNCTION__ . ": :4: getPAMXRecords >>>>> rql: {$rql}");
+
         $records = $this->APSC()->getResources($rql, "/aps/2/resources/{$domain->aps->id}/records");
+
+        $this->logger->info(__FUNCTION__ . ": :5: getPAMXRecords >>>>> APSC records: {$records}");
+
         if ($asExchangeArray) {
             foreach ($records as $index => $record) {
                 $records[$index] = rtrim($record->exchange, ".");
             }
         }
+
+        $this->logger->info(__FUNCTION__ . ": :6: getPAMXRecords >>>>> Last records: {$records}");
 
         return $records;
     }
@@ -1215,7 +1227,11 @@ class context extends \APS\ResourceBase
     protected function revertMXRecords($domain)
     {
         $records = $this->getPAMXRecords($domain, 'in');
+        $this->logger->info(__FUNCTION__ . ": :7: revertMXRecords >>>>> records: {$records}");
+
         foreach ($records as $record) {
+            $this->logger->info(__FUNCTION__ . ": :8: revertMXRecords For Each >>>>> $record: {$record}");
+
             try {
                 $this->logger->info(__FUNCTION__ . ": Removing {$record->exchange}");
                 $this->APSC()->getIo()->sendRequest(\APS\Proto::DELETE, "/aps/2/resources/{$domain->aps->id}/records/{$record->aps->id}");
@@ -1239,9 +1255,12 @@ class context extends \APS\ResourceBase
 
         try {
             $pa_records = $this->getPAMXRecords($domain);
+            $this->logger->info(__FUNCTION__ . ": :9: replaceMXRecords pa records >>>>> {$pa_records}");
 
             ## Avoid potential conflicts from existing SE records
             $this->mx = $this->getServiceMXRecords();
+            $this->logger->info(__FUNCTION__ . ": :10: replaceMXRecords MX >>>>> {$this->mx}");
+
             $SEMXs = [];
             foreach ($this->mx as $value) {
                 if ($value != null) {
@@ -1250,9 +1269,11 @@ class context extends \APS\ResourceBase
             }
 
             $this->logger->info("111 MX LIST: ", $SEMXs);
-         
+
             if (!empty($SEMXs)) {
                 foreach ($pa_records as $pa_index => $pa_record) {
+                    $this->logger->info(__FUNCTION__ . ": :11: replaceMXRecords For Each pa records >>>>> {$pa_records}");
+                    $this->logger->info(__FUNCTION__ . ": :12: replaceMXRecords For Each pa index >>>>> {$pa_index}");
                     if (($se_index = array_search($pa_record->exchange, $SEMXs)) !== false) {
                         unset($pa_records[$pa_index]);
                         unset($SEMXs[$se_index]);
@@ -1263,6 +1284,8 @@ class context extends \APS\ResourceBase
                 if (count($SEMXs)) {
                     $this->logger->info(__FUNCTION__ . ": Creating new PA MX record resources");
                     $record = $this->createResourceByTypeId("http://parallels.com/aps/types/pa/dns/record/mx/1.0");
+                    $this->logger->info(__FUNCTION__ . ": :13: replaceMXRecords -- record >>>>> {$record}");
+
                     foreach ($SEMXs as $index => $SEMX) {
                         $this->logger->info(__FUNCTION__ . ": Setting up record: $SEMX -> {$domain->name}.");
                         $record->source = $domain->name . ".";
@@ -1279,12 +1302,16 @@ class context extends \APS\ResourceBase
                     if (count($pa_records)) {
                         $this->logger->info(__FUNCTION__ . ": Replacing existing PA MX RRs with the first created SE MX RR");
                         $SEMX = array_pop($SEMXs);
+                        $this->logger->info(__FUNCTION__ . ": :14: >>>> SEMX {$SEMX}");
 
                         $resources = $this->APSC()->getResources(
                             "and(implementing(http://parallels.com/aps/types/pa/dns/record/mx/1.0),like(exchange,{$SEMX}))", "/aps/2/resources/{$domain->aps->id}/records"
                         );
+                        $this->logger->info(__FUNCTION__ . ": :15: >>>> resources {$resources}");
 
                         $record = array_pop($resources);
+                        $this->logger->info(__FUNCTION__ . ": :16: >>>> record {$record}");
+
                         foreach ($pa_records as $pa_record) {
                             $this->APSC()->linkResource($record, 'replaces', $pa_record);
                         }
@@ -1296,6 +1323,7 @@ class context extends \APS\ResourceBase
 
             $result = true;
         } catch (Exception $e) {
+            $this->logger->info(__FUNCTION__ . ": :17: >>>> Exception");
             /** @see https://github.com/SpamExperts/aps2-addon/issues/42 */
             if ($e instanceof \Rest\RestException && 'Plesk.ErrorHandling.dns.DuplicateDNSRecord' === $e->details->error) {
                 $this->report->add("Could not replace MX records for the domain '{$domain->name}'. It looks like the domain resource has some extra MX-record resources added by someone with higher permissions (most likely an admin) and this application can not manage these MX records in any way due to a lack of permissions. Please try to execute the following RQL query as admin - /aps/2/resources/{$domain->aps->id}/records?implementing(http://parallels.com/aps/types/pa/dns/record/mx/1.0) - to see if this indeed the case and, if yes, deleting the found resources followed by the Protect action should fix the domain state.", Report::WARNING);
@@ -1356,13 +1384,14 @@ class context extends \APS\ResourceBase
         $subscription = reset($this->APSC()->getResources(
             "and(implementing(http://parallels.com/aps/types/pa/subscription/1.0),eq(subscriptionId,{$subscriptionId}))", "/aps/2/resources/"
         ));
+        $this->logger->info(": :19: >>>>> subscriptionHasSEReources {$subscription}");
 
         if ($subscription) {
             $result = 0 < sizeof($this->APSC()->getResources(
                     "implementing(http://aps.spamexperts.com/app/context/2.0),linkedWith({$subscription->aps->id})", "/aps/2/resources/"
                 ));
         }
-
+        $this->logger->info(": :20: >>>>> result {$result}");
         return $result;
     }
 }

@@ -6,7 +6,7 @@
         
     <version>2.0</version>
         
-    <release>25</release>
+    <release>26</release>
         
     <homepage>http://www.spamexperts.com/</homepage>
         
@@ -209,6 +209,12 @@
             <version release="25" version="2.0">
 
                 <entry>Build the latest version </entry>
+
+            </version>
+
+            <version release="26" version="2.0">
+
+                <entry>Add debug logs </entry>
 
             </version>
 
