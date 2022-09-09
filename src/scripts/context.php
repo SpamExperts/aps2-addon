@@ -1186,8 +1186,8 @@ class context extends \APS\ResourceBase
             // Get only SE records or except SE records
             $SEMXs = join(',', $this->mx);
             $rql .= "$io(exchange,($SEMXs)),";
+            $this->logger->info(__FUNCTION__ . ": :3: getPAMXRecords >>>>> SEMXs: {$SEMXs}");
         }
-        $this->logger->info(__FUNCTION__ . ": :3: getPAMXRecords >>>>> SEMXs: {$SEMXs}");
 
         $rql .= "sort(+priority))";
 
